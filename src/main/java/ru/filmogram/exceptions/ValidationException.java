@@ -1,4 +1,4 @@
-package exceptions;
+package ru.filmogram.exceptions;
 
 public class ValidationException extends Exception{
 

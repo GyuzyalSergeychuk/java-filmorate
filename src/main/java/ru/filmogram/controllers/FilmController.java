@@ -1,12 +1,11 @@
-package controllers;
+package ru.filmogram.controllers;
 
-import exceptions.ValidationException;
+import ru.filmogram.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
-import model.Film;
+import ru.filmogram.model.Film;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,7 @@ public class FilmController {
     @PutMapping()
     public Film update(@RequestBody Film film) throws ValidationException {
         Film afterCheckFilm = standardCheck(film);
-        if (afterCheckFilm.equals(films.get(afterCheckFilm.getName()))) {
+        if (afterCheckFilm.getName().equals(films.get(afterCheckFilm.getName()).getName())) {
             films.put(afterCheckFilm.getName(), afterCheckFilm);
             log.info("В объект фильм внесены изменения : {}", afterCheckFilm);
             return afterCheckFilm;
@@ -45,19 +44,18 @@ public class FilmController {
     private Film standardCheck(Film film) throws ValidationException {
 
         LocalDate date = LocalDate.of(1895, 12, 28);
-        LocalTime time = LocalTime.of(00, 00, 00);
 
         if (film.getName().isBlank()) {
-            log.debug("Название фильма не может быть пустым : {}", film);
+            log.error("Название фильма не может быть пустым: {}", film);
             throw new ValidationException("Название фильма не может быть пустым");
-        } else if (film.getDescription().length() < 200) {
-            log.debug("Длина описание превышает 200 символов : {}", film);
+        } else if (film.getDescription().length() > 200) {
+            log.error("Длина описание превышает 200 символов: {}", film);
             throw new ValidationException("Максимальная длина описания — 200 символов");
         } else if (film.getReleaseDate().isBefore(date)) {
-            log.debug("Даты релиза - раньше 28 декабря 1895 года : {}", film);
+            log.error("Даты релиза - раньше 28 декабря 1895 года: {}", film);
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
-        } else if (film.getDuration().isAfter(time)) {
-            log.debug("Продолжительность фильма отсутствует : {}", film);
+        } else if (film.getDuration() < 0l) {
+            log.error("Продолжительность фильма отсутствует: {}", film);
             throw new ValidationException("Продолжительность фильма должна быть положительной");
         } else {
             return film;

@@ -1,16 +1,18 @@
-package controllers;
+package ru.filmogram.controllers;
 
-import exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
-import model.User;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import ru.filmogram.exceptions.ValidationException;
+import ru.filmogram.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
@@ -33,7 +35,7 @@ public class UserController {
     @PutMapping()
     public User update(@RequestBody User user) throws ValidationException {
         User afterCheckUser = standardCheck(user);
-        if (afterCheckUser.equals(users.get(afterCheckUser.getEmail()))) {
+        if (afterCheckUser.getEmail().equals(users.get(afterCheckUser.getEmail()).getEmail())) {
             users.put(afterCheckUser.getEmail(), afterCheckUser);
             log.info("В объект внесены изменения: {}", afterCheckUser);
             return afterCheckUser;
@@ -46,16 +48,17 @@ public class UserController {
         LocalDate today = LocalDate.now();
 
         if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.debug("Неверно введен email: {}", user);
+            log.error("Неверно введен email: {}", user);
             throw new ValidationException("Неверно введен email");
         } else if (user.getLogin().isEmpty() || user.getLogin().isBlank()) {
-            log.debug("Логин не может быть пустым и содержать пробелы: {}", user);
+            log.error("Логин не может быть пустым и содержать пробелы: {}", user);
             throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         } else if (user.getName().isBlank()) {
             user.setName(user.getLogin());
-            log.info("Имя пользователя изменено на lodin: {}", user);
+            log.error("Имя пользователя изменено на lodin: {}", user);
+            throw  new ValidationException("Имя пользователя не может быть пустым");
         } else if (user.getBirthday().isAfter(today)) {
-            log.debug("Дата рождения не может быть в будущем: {}", user);
+            log.error("Дата рождения не может быть в будущем: {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
         return user;

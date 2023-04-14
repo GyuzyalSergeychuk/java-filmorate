@@ -1,17 +1,19 @@
-package model;
+package ru.filmogram.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Data
+@Builder
 public class Film {
 
     private int id;
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private LocalTime duration;
+    // продолжительность фильма в минутах
+    private long duration;
 
 }
