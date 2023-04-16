@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class Film {
 
+    private static int nextId = 0;
     private int id;
     private String name;
     private String description;
@@ -16,4 +17,8 @@ public class Film {
     // продолжительность фильма в минутах
     private long duration;
 
+    public void assignId() {
+        nextId++;
+        id = nextId;
+    }
 }

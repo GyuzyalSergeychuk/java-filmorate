@@ -11,6 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
@@ -31,7 +34,7 @@ class UserControllerTest {
 
     @Test
     void findAll() {
-        userController.users.put(user.getEmail(), user);
+        userController.users.put(user.getId(), user);
         // action
         List<User> userList = userController.findAll();
 
@@ -51,7 +54,7 @@ class UserControllerTest {
 
     @Test
     void update() throws ValidationException {
-        userController.users.put(user.getEmail(), user);
+        userController.users.put(user.getId(), user);
         String name = "BEEEEEEEEEn";
         User expectedUser = User.builder()
                 .id(1)
@@ -69,7 +72,7 @@ class UserControllerTest {
 
     @Test
     void updateInvalideEmail() throws ValidationException {
-        userController.users.put(user.getEmail(), user);
+        userController.users.put(user.getId(), user);
         User expectedUser = User.builder()
                 .id(1)
                 .birthday(LocalDate.of(1985,05,13))
@@ -86,7 +89,7 @@ class UserControllerTest {
 
     @Test
     void updateInvalideBirthday() throws ValidationException {
-        userController.users.put(user.getEmail(), user);
+        userController.users.put(user.getId(), user);
         User expectedUser = User.builder()
                 .id(1)
                 .birthday(LocalDate.of(2024,05,13))
@@ -103,7 +106,7 @@ class UserControllerTest {
 
     @Test
     void updateInvalideLogin() throws ValidationException {
-        userController.users.put(user.getEmail(), user);
+        userController.users.put(user.getId(), user);
         User expectedUser = User.builder()
                 .id(1)
                 .birthday(LocalDate.of(1985, 05, 13))
@@ -120,7 +123,7 @@ class UserControllerTest {
 
     @Test
     void updateInvalideName() throws ValidationException {
-        userController.users.put(user.getEmail(), user);
+        userController.users.put(user.getId(), user);
         User expectedUser = User.builder()
                 .id(1)
                 .birthday(LocalDate.of(1985, 05, 13))
@@ -129,9 +132,9 @@ class UserControllerTest {
                 .name("")
                 .build();
 
+        User user1 = userController.update(expectedUser);
+
         // action
-        assertThrows(ValidationException.class,
-                () -> userController.update(expectedUser),
-                "Имя пользователя не может быть пустым");
+        assertEquals(expectedUser.getLogin(), user1.getName());
     }
 }

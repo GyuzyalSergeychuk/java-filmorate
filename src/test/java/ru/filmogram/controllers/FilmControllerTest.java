@@ -2,7 +2,6 @@ package ru.filmogram.controllers;
 
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
-import ru.filmogram.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @ExtendWith(MockitoExtension.class)
 class FilmControllerTest {
 
@@ -20,7 +22,7 @@ class FilmControllerTest {
     FilmController filmController;
 
     @BeforeEach
-    public void beforeEach() throws ValidationException {
+    public void beforeEach(){
         film = Film.builder()
                 .id(1)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
@@ -33,7 +35,7 @@ class FilmControllerTest {
 
     @Test
     void findAll() {
-        filmController.films.put(film.getName(), film);
+        filmController.films.put(film.getId(), film);
         // action
         List<Film> filmList = filmController.findAll();
 
@@ -53,7 +55,7 @@ class FilmControllerTest {
 
     @Test
     void update() throws ValidationException {
-        filmController.films.put(film.getName(), film);
+        filmController.films.put(film.getId(), film);
         long duration = 193L;
         Film expectedFilm = Film.builder()
                 .id(1)
@@ -72,7 +74,7 @@ class FilmControllerTest {
 
     @Test
     void updateInvalideName() {
-        filmController.films.put(film.getName(), film);
+        filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
@@ -90,7 +92,7 @@ class FilmControllerTest {
 
     @Test
     void updateInvalideDescription()  {
-        filmController.films.put(film.getName(), film);
+        filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви и " +
@@ -111,7 +113,7 @@ class FilmControllerTest {
 
     @Test
     void updateInvalideDuration()  {
-        filmController.films.put(film.getName(), film);
+        filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
@@ -130,7 +132,7 @@ class FilmControllerTest {
 
     @Test
     void updateInvalideReleaseDate()  {
-        filmController.films.put(film.getName(), film);
+        filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +

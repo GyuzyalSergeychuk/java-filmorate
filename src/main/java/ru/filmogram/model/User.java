@@ -9,10 +9,15 @@ import java.time.LocalDate;
 @Builder
 public class User {
 
+    private static int nextId = 0;
     private int id;
     private String email;
     private String login;
     private String name;
     private LocalDate birthday;
 
+    public void assignId() {
+        nextId++;
+        id = nextId;
+    }
 }
