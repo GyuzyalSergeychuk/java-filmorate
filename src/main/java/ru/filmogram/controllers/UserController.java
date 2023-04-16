@@ -44,7 +44,6 @@ public class UserController {
     }
 
     private User standardCheck(User user) throws ValidationException {
-
         LocalDate today = LocalDate.now();
 
         if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
