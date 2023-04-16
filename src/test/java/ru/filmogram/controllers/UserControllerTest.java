@@ -16,16 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
-
     User user;
     @InjectMocks
     UserController userController;
 
     @BeforeEach
-    public void beforeEach() throws ValidationException{
+    public void beforeEach() throws ValidationException {
         user = User.builder()
                 .id(1)
-                .birthday(LocalDate.of(1985,05,13))
+                .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")
                 .name("Ben")
@@ -58,7 +57,7 @@ class UserControllerTest {
         String name = "BEEEEEEEEEn";
         User expectedUser = User.builder()
                 .id(1)
-                .birthday(LocalDate.of(1985,05,13))
+                .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")
                 .name("BEEEEEEEEEn")
@@ -75,7 +74,7 @@ class UserControllerTest {
         userController.users.put(user.getId(), user);
         User expectedUser = User.builder()
                 .id(1)
-                .birthday(LocalDate.of(1985,05,13))
+                .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjhcome.ru")
                 .login("nnn")
                 .name("BEEEEEEEEEn")
@@ -92,7 +91,7 @@ class UserControllerTest {
         userController.users.put(user.getId(), user);
         User expectedUser = User.builder()
                 .id(1)
-                .birthday(LocalDate.of(2024,05,13))
+                .birthday(LocalDate.of(2024, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")
                 .name("BEEEEEEEEEn")

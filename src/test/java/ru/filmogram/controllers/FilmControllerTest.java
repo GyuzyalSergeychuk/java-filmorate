@@ -22,14 +22,14 @@ class FilmControllerTest {
     FilmController filmController;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         film = Film.builder()
                 .id(1)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(192L)
                 .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022,12,06))
+                .releaseDate(LocalDate.of(2022, 12, 06))
                 .build();
     }
 
@@ -63,7 +63,7 @@ class FilmControllerTest {
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(193L)
                 .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022,12,06))
+                .releaseDate(LocalDate.of(2022, 12, 06))
                 .build();
 
         // action
@@ -81,7 +81,7 @@ class FilmControllerTest {
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(192L)
                 .name("")
-                .releaseDate(LocalDate.of(2022,12,06))
+                .releaseDate(LocalDate.of(2022, 12, 06))
                 .build();
 
         // action
@@ -91,7 +91,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideDescription()  {
+    void updateInvalideDescription() {
         filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
@@ -101,7 +101,7 @@ class FilmControllerTest {
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(192L)
                 .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022,12,06))
+                .releaseDate(LocalDate.of(2022, 12, 06))
                 .build();
 
         // action
@@ -112,7 +112,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideDuration()  {
+    void updateInvalideDuration() {
         filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
@@ -120,7 +120,7 @@ class FilmControllerTest {
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(-1L)
                 .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022,12,06))
+                .releaseDate(LocalDate.of(2022, 12, 06))
                 .build();
 
         // action
@@ -131,7 +131,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideReleaseDate()  {
+    void updateInvalideReleaseDate() {
         filmController.films.put(film.getId(), film);
         Film expectedFilm = Film.builder()
                 .id(1)
@@ -139,7 +139,7 @@ class FilmControllerTest {
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(-1L)
                 .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(1800,12,06))
+                .releaseDate(LocalDate.of(1800, 12, 06))
                 .build();
 
         // action
