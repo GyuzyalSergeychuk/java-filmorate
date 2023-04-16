@@ -54,7 +54,7 @@ public class UserController {
             log.error("Логин не может быть пустым и содержать пробелы: {}", user);
             throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         }
-        if (user.getBirthday().isAfter(today) ) {
+        if (user.getBirthday().isAfter(today)) {
             log.error("Дата рождения не может быть в будущем: {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
