@@ -1,9 +1,9 @@
 package ru.filmogram.controllers;
 
+import org.springframework.web.bind.annotation.*;
 import ru.filmogram.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import ru.filmogram.model.Film;
-import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,9 +43,6 @@ public class FilmController {
     }
 
     private Film standardCheck(Film film) throws ValidationException {
-
-        LocalDate date = LocalDate.of(1895, 12, 28);
-
         if (film.getName() == null || film.getName().isBlank() || film.getName().isEmpty()) {
             log.error("Название фильма не может быть пустым: {}", film);
             throw new ValidationException("Название фильма не может быть пустым");
@@ -54,7 +51,9 @@ public class FilmController {
             log.error("Длина описание превышает 200 символов: {}", film);
             throw new ValidationException("Максимальная длина описания — 200 символов");
         }
-        if (film.getReleaseDate().isBefore(date)) {
+
+        var dateOfFirstFilm = LocalDate.of(1895, 12, 28);
+        if (film.getReleaseDate().isBefore(dateOfFirstFilm)) {
             log.error("Даты релиза - раньше 28 декабря 1895 года: {}", film);
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
         }

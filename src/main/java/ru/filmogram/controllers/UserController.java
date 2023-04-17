@@ -44,8 +44,6 @@ public class UserController {
     }
 
     private User standardCheck(User user) throws ValidationException {
-        LocalDate today = LocalDate.now();
-
         if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             log.error("Неверно введен email: {}", user);
             throw new ValidationException("Неверно введен email");
@@ -54,6 +52,8 @@ public class UserController {
             log.error("Логин не может быть пустым и содержать пробелы: {}", user);
             throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         }
+
+        var today = LocalDate.now();
         if (user.getBirthday().isAfter(today)) {
             log.error("Дата рождения не может быть в будущем: {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем");

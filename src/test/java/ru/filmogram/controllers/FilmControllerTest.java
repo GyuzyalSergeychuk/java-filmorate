@@ -40,7 +40,10 @@ class FilmControllerTest {
         List<Film> filmList = filmController.findAll();
 
         // assert
-        assertEquals(film.getName(), filmList.get(0).getName());
+        assertEquals(
+                film.getName(),
+                filmList.get(0).getName(),
+                "Проверка корректности работы findAll()");
     }
 
     @Test
@@ -49,8 +52,14 @@ class FilmControllerTest {
         Film film1 = filmController.create(film);
 
         // assert
-        assertEquals(film.getDescription(), film1.getDescription());
-        assertEquals(film.getReleaseDate(), film1.getReleaseDate());
+        assertEquals(
+                film.getDescription(),
+                film1.getDescription(),
+                "Сравнение описания фильма");
+        assertEquals(
+                film.getReleaseDate(),
+                film1.getReleaseDate(),
+                "Сравнение даты релиза фильма");
     }
 
     @Test
@@ -69,7 +78,10 @@ class FilmControllerTest {
         // action
         Film film1 = filmController.update(expectedFilm);
 
-        assertEquals(duration, film1.getDuration());
+        assertEquals(
+                duration,
+                film1.getDuration(),
+                "Проверка корректности работы update()");
     }
 
     @Test
@@ -85,9 +97,10 @@ class FilmControllerTest {
                 .build();
 
         // action
-        assertThrows(ValidationException.class,
+        assertThrows(
+                ValidationException.class,
                 () -> filmController.update(expectedFilm),
-                "Название фильма не может быть пустым");
+                "Проверка исключения на правильность заполнения названия фильма");
     }
 
     @Test
@@ -108,7 +121,7 @@ class FilmControllerTest {
         assertThrows(
                 ValidationException.class,
                 () -> filmController.update(expectedFilm),
-                "Максимальная длина описания — 200 символов");
+                "Проверка исключения на максимальную длина описания фильма");
     }
 
     @Test
@@ -127,7 +140,7 @@ class FilmControllerTest {
         assertThrows(
                 ValidationException.class,
                 () -> filmController.update(expectedFilm),
-                "Продолжительность фильма должна быть положительной");
+                "Проверка исключения на положительную продолжительность фильма");
     }
 
     @Test
@@ -146,6 +159,6 @@ class FilmControllerTest {
         assertThrows(
                 ValidationException.class,
                 () -> filmController.update(expectedFilm),
-                "Дата релиза — не раньше 28 декабря 1895 года");
+                "Проверка исключения дату релиза");
     }
 }

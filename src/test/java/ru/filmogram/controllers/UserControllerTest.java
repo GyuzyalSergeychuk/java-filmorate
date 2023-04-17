@@ -38,7 +38,10 @@ class UserControllerTest {
         List<User> userList = userController.findAll();
 
         // assert
-        assertEquals(user.getEmail(), userList.get(0).getEmail());
+        assertEquals(
+                user.getEmail(),
+                userList.get(0).getEmail(),
+                "Проверка корректности работы findAll()");
     }
 
     @Test
@@ -47,8 +50,14 @@ class UserControllerTest {
         User user1 = userController.create(user);
 
         // assert
-        assertEquals(user.getLogin(), user1.getLogin());
-        assertEquals(user.getEmail(), user1.getEmail());
+        assertEquals(
+                user.getLogin(),
+                user1.getLogin(),
+                "Сравнение login пользователя");
+        assertEquals(
+                user.getEmail(),
+                user1.getEmail(),
+                "Сравнение email пользователя");
     }
 
     @Test
@@ -66,7 +75,10 @@ class UserControllerTest {
         // action
         User user1 = userController.update(expectedUser);
 
-        assertEquals(name, user1.getName());
+        assertEquals(
+                name,
+                user1.getName(),
+        "Проверка корректности работы update()");
     }
 
     @Test
@@ -81,9 +93,10 @@ class UserControllerTest {
                 .build();
 
         // action
-        assertThrows(ValidationException.class,
+        assertThrows(
+                ValidationException.class,
                 () -> userController.update(expectedUser),
-                "Неверно введен email");
+                "Проверка исключения на правильность заполнения email");
     }
 
     @Test
@@ -98,9 +111,10 @@ class UserControllerTest {
                 .build();
 
         // action
-        assertThrows(ValidationException.class,
+        assertThrows(
+                ValidationException.class,
                 () -> userController.update(expectedUser),
-                "Дата рождения не может быть в будущем");
+                "Проверка исключения на дату рождения");
     }
 
     @Test
@@ -115,9 +129,10 @@ class UserControllerTest {
                 .build();
 
         // action
-        assertThrows(ValidationException.class,
+        assertThrows(
+                ValidationException.class,
                 () -> userController.update(expectedUser),
-                "Логин не может быть пустым и содержать пробелы");
+                "Проверка исключения на правильность заполнения логина");
     }
 
     @Test
@@ -134,6 +149,9 @@ class UserControllerTest {
         User user1 = userController.update(expectedUser);
 
         // action
-        assertEquals(expectedUser.getLogin(), user1.getName());
+        assertEquals(
+                expectedUser.getLogin(),
+                user1.getName(),
+                "Проверка заполнения поля имя пользователя логином при пустом поле имени");
     }
 }
