@@ -1,14 +1,13 @@
 package ru.filmogram.controllers;
 
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import ru.filmogram.exceptions.ValidationException;
-import ru.filmogram.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.filmogram.exceptions.ValidationException;
+import ru.filmogram.model.User;
 import ru.filmogram.services.UserService;
 import ru.filmogram.storage.user.UserStorage;
 
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
