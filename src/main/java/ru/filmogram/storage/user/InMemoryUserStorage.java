@@ -70,7 +70,7 @@ public class InMemoryUserStorage implements UserStorage {
     public List<User> getFriends(Long id) {
         List<User> listUserFriends = new ArrayList<>();
 
-        if(users.get(id).getFriends() == null){
+        if (users.get(id).getFriends() == null) {
             return listUserFriends;
         }
         for (Long friend : users.get(id).getFriends()) {
