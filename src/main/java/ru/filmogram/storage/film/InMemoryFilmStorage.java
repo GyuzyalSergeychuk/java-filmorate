@@ -55,6 +55,9 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public void deleteLikeFilm(Long id, Long userId) {
+        if(userId < 1) {
+            throw new ObjectNotFoundException("Такой пользователь не существует");
+        }
         films.get(id).deleteLike(userId);
     }
 
@@ -73,7 +76,26 @@ public class InMemoryFilmStorage implements FilmStorage{
         if (count < 0) {
             throw new ValidationException("Значение не может быть отрицательным");
         }
-        return sortFilms.subList(0, count + 1);
+        return sortFilms.subList(0, count);
+    }
+
+    @Override
+    public List<Film> getAllPopular() {
+        List<Film> sortFilms1 = films.values()
+                .stream()
+                .sorted()
+                .collect(Collectors.toList());
+
+        return sortFilms1;
+
+    }
+
+    @Override
+    public Film getFilmId(Long id) {
+        if (films.containsKey(id)) {
+            return films.get(id);
+        }
+        throw new ObjectNotFoundException(String.format("Фильм не найден"));
     }
 
     private Film standardCheck(Film film) throws ValidationException {

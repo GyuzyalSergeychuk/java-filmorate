@@ -18,4 +18,8 @@ public interface FilmStorage {
     public void deleteLikeFilm(Long id, Long userId);
 
     public List<Film> sortPopularFilm(Integer count) throws ValidationException;
+
+    public List<Film> getAllPopular();
+
+    public Film getFilmId(Long id);
 }

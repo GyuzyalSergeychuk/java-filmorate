@@ -51,8 +51,18 @@ public class FilmController {
         filmService.deleteLike(id, userId);
     }
 
-    @GetMapping("/popular?count={count}")
-    public List<Film> sortPopularCountFilm(@PathVariable("count") Integer count) throws ValidationException {
-        return filmService.sortFilm(count);
+    @GetMapping("/popular")
+    public List<Film> allPopular() throws ValidationException {
+        return filmService.allPopularFilms();
+    }
+
+    @GetMapping(value = "/popular", params = "count")
+    public List<Film> sortPopularCountFilm(@RequestParam Integer count) throws ValidationException {
+        return filmService.sortFilmCount(count);
+    }
+
+    @GetMapping("{id}")
+    public Film getFilm(@PathVariable("id") Long id) {
+        return filmService.getIdFilm(id);
     }
 }

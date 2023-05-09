@@ -27,7 +27,15 @@ public class FilmService {
         filmStorage.deleteLikeFilm(id, userId);
     }
 
-    public List<Film> sortFilm(Integer count) throws ValidationException {
+    public List<Film> sortFilmCount(Integer count) throws ValidationException {
         return filmStorage.sortPopularFilm(count);
+    }
+
+    public List<Film> allPopularFilms() throws ValidationException {
+        return filmStorage.getAllPopular();
+    }
+
+    public Film getIdFilm(Long id){
+        return filmStorage.getFilmId(id);
     }
 }

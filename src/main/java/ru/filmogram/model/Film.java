@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -16,7 +17,7 @@ public class Film implements Comparable<Film>{
     private LocalDate releaseDate;
     // продолжительность фильма в минутах
     private long duration;
-    private Set<Long> like;
+    private Set<Long> likes;
 
     public void assignId() {
         nextId++;
@@ -24,15 +25,24 @@ public class Film implements Comparable<Film>{
     }
 
     public void addLike(Long userId) {
-        like.add(userId);
+        if(likes == null) {
+            likes = new HashSet<>();
+        }
+        likes.add(userId);
     }
 
     public void deleteLike(Long userId) {
-        like.remove(userId);
+        likes.remove(userId);
     }
 
     @Override
     public int compareTo(Film o) {
-        return this.like.size() - o.like.size();
+        if(likes == null) {
+            likes = new HashSet<>();
+        }
+        if (o.getLikes() == null) {
+            return -1;
+        }
+        return this.likes.size() - o.likes.size();
     }
 }

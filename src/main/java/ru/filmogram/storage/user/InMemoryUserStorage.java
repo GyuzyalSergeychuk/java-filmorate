@@ -46,7 +46,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserId(Long id) {
-        if(users.containsKey(id)) {
+        if (users.containsKey(id)) {
             return users.get(id);
         }
         throw new ObjectNotFoundException(String.format("Пользователь %d не найден", id));
@@ -55,7 +55,10 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User addFriend(Long id, Long friendId) {
         User user = users.get(id);
+        User friendUser = users.get(friendId);
         user.addFriend(friendId);
+        friendUser.addFriend(id);
+
         return user;
     }
 
@@ -68,8 +71,11 @@ public class InMemoryUserStorage implements UserStorage {
     public List<User> getFriends(Long id) {
         List<User> listUserFriends = new ArrayList<>();
 
+        if(users.get(id).getFriends() == null){
+            return listUserFriends;
+        }
         for (Long friend : users.get(id).getFriends()) {
-            listUserFriends.add(users.get(id));
+            listUserFriends.add(users.get(friend));
         }
         return listUserFriends;
     }
@@ -78,15 +84,15 @@ public class InMemoryUserStorage implements UserStorage {
     public List<User> getCommonFriends(Long id, Long otherId) {
         List<User> listCommonFriends = new ArrayList<>();
 
+        if (users.get(id).getFriends() == null) {
+            return listCommonFriends;
+        }
+
         for (Long friend : users.get(id).getFriends()) {
             if (users.get(otherId).getFriends().contains(friend)) {
                 listCommonFriends.add(users.get(friend));
             }
         }
-
-//        if (listCommonFriends.size() == 0){
-//            throw new ObjectNotFoundException("Общих знакомых не найдено.");
-//        }
         return listCommonFriends;
     }
 

@@ -2,9 +2,12 @@ package ru.filmogram.model;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.filmogram.exceptions.ObjectNotFoundException;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Data
 @Builder
@@ -23,6 +26,12 @@ public class User {
     }
 
     public void addFriend(Long friendId) {
+        if(friends == null) {
+            friends = new HashSet<>();
+        }
+        if (friendId < 0){
+            throw new ObjectNotFoundException("Пользователь не найден.");
+        }
         friends.add(friendId);
     }
 
