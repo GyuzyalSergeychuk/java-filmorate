@@ -13,7 +13,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse ValidationException(final ValidationException e) {
+    public ErrorResponse validationException(final ValidationException e) {
         return new ErrorResponse(
                 String.format("Ошибка с полем \"%s\".", e)
         );
@@ -21,7 +21,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse ObjectNotFoundException(final ObjectNotFoundException e) {
+    public ErrorResponse objectNotFoundException(final ObjectNotFoundException e) {
         return new ErrorResponse(
                 e.getMessage()
         );
@@ -29,7 +29,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse Throwable(final Throwable e) {
+    public ErrorResponse throwable(final Throwable e) {
         return new ErrorResponse(
                 "Произошла непредвиденная ошибка."
         );
