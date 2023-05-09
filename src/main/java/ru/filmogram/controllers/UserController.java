@@ -32,11 +32,11 @@ public class UserController {
 
     @PutMapping()
     public User update(@RequestBody User user) throws ValidationException {
-    return userStorage.updateUser(user);
+        return userStorage.updateUser(user);
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable("id") Long id){
+    public User getUser(@PathVariable("id") Long id) {
         return userService.getIdUser(id);
     }
 
@@ -51,12 +51,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getAllFriends(@PathVariable("id") Long id){
+    public List<User> getAllFriends(@PathVariable("id") Long id) {
         return userService.allFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getAllСommonFriends(@PathVariable("id") Long id,@PathVariable("otherId") Long otherId) {
-    return userService.allCommonFriends(id, otherId);
+    public List<User> getAllСommonFriends(@PathVariable("id") Long id, @PathVariable("otherId") Long otherId) {
+        return userService.allCommonFriends(id, otherId);
     }
 }

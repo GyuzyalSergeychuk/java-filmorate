@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @Builder
-public class Film implements Comparable<Film>{
+public class Film implements Comparable<Film> {
     private static Long nextId = 0L;
     private Long id;
     private String name;
@@ -25,7 +25,7 @@ public class Film implements Comparable<Film>{
     }
 
     public void addLike(Long userId) {
-        if(likes == null) {
+        if (likes == null) {
             likes = new HashSet<>();
         }
         likes.add(userId);
@@ -37,7 +37,7 @@ public class Film implements Comparable<Film>{
 
     @Override
     public int compareTo(Film o) {
-        if(likes == null) {
+        if (likes == null) {
             likes = new HashSet<>();
         }
         if (o.getLikes() == null) {

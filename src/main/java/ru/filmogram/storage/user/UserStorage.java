@@ -1,7 +1,5 @@
 package ru.filmogram.storage.user;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
 

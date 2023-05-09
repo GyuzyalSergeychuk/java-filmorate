@@ -15,7 +15,7 @@ public class UserService {
     @Autowired
     private UserStorage userStorage;
 
-    public User getIdUser(Long id){
+    public User getIdUser(Long id) {
         return userStorage.getUserId(id);
     }
 
@@ -23,7 +23,7 @@ public class UserService {
         return userStorage.addFriend(id, friendId);
     }
 
-    public void deleteUserFriendsId(Long id, Long friendId){
+    public void deleteUserFriendsId(Long id, Long friendId) {
         userStorage.deleteFriend(id, friendId);
     }
 
@@ -31,7 +31,7 @@ public class UserService {
         return userStorage.getFriends(id);
     }
 
-    public List<User> allCommonFriends(Long id, Long otherId)  {
+    public List<User> allCommonFriends(Long id, Long otherId) {
         return userStorage.getCommonFriends(id, otherId);
     }
 }

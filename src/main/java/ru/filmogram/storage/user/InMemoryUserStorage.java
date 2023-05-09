@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
-import ru.filmogram.services.UserService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

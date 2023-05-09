@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
-import ru.filmogram.model.User;
 import ru.filmogram.storage.film.FilmStorage;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class FilmService {
         return filmStorage.getAllPopular();
     }
 
-    public Film getIdFilm(Long id){
+    public Film getIdFilm(Long id) {
         return filmStorage.getFilmId(id);
     }
 }
