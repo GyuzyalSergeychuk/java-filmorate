@@ -40,7 +40,7 @@ class FilmControllerTest {
     void needToDeliteThisTest() {
         var a = 1;
         assertEquals(a, 1);
-        }
+    }
 //    @Test
 //    void findAll() throws ValidationException {
 //        filmController.create(film);
