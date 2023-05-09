@@ -1,67 +1,62 @@
 package ru.filmogram.controllers;
 
-import lombok.extern.slf4j.Slf4j;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
+import ru.filmogram.services.UserService;
+import ru.filmogram.storage.user.UserStorage;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
+@RequiredArgsConstructor
 public class UserController {
 
-    HashMap<Integer, User> users = new HashMap<>();
+    @Autowired
+    private UserStorage userStorage;
+    @Autowired
+    private UserService userService;
 
     @GetMapping()
     public List<User> findAll() {
-        return new ArrayList<User>(users.values());
+        return userStorage.findAllUser();
     }
 
     @PostMapping()
     public User create(@RequestBody User user) throws ValidationException {
-        User afterCheckUser = standardCheck(user);
-        afterCheckUser.assignId();
-        users.put(afterCheckUser.getId(), afterCheckUser);
-        log.info("Добавлен пользователь: {}", afterCheckUser);
-        return afterCheckUser;
+        return userStorage.createUser(user);
     }
 
     @PutMapping()
     public User update(@RequestBody User user) throws ValidationException {
-        User afterCheckUser = standardCheck(user);
-        if (afterCheckUser.getId() == users.get(afterCheckUser.getId()).getId()) {
-            users.put(afterCheckUser.getId(), afterCheckUser);
-            log.info("В объект внесены изменения: {}", afterCheckUser);
-            return afterCheckUser;
-        }
-        throw new ValidationException("Вызван endpount Put, но данный пользователь отсутствует");
+    return userStorage.updateUser(user);
     }
 
-    private User standardCheck(User user) throws ValidationException {
-        if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.error("Неверно введен email: {}", user);
-            throw new ValidationException("Неверно введен email");
-        }
-        if (user.getLogin().isEmpty() || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.error("Логин не может быть пустым и содержать пробелы: {}", user);
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable("id") Long id){
+        return userService.getIdUser(id);
+    }
 
-        var today = LocalDate.now();
-        if (user.getBirthday().isAfter(today)) {
-            log.error("Дата рождения не может быть в будущем: {}", user.getBirthday());
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-            log.error("Имя пользователя изменено на login: {}", user);
-        }
-        return user;
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addUserFriends(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
+        return userService.addFriends(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteUserFriends(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
+        userService.deleteUserFriendsId(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getAllFriends(@PathVariable("id") Long id){
+        return userService.allFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getAllСommonFriends(@PathVariable("id") Long id,@PathVariable("therId") Long otherId) {
+    return userService.allCommonFriends(id, otherId);
     }
 }

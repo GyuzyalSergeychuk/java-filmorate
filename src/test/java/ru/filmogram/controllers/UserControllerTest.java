@@ -1,5 +1,8 @@
 package ru.filmogram.controllers;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,23 +10,32 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.filmogram.services.UserService;
+import ru.filmogram.storage.user.InMemoryUserStorage;
+import ru.filmogram.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
     User user;
+
     @InjectMocks
     UserController userController;
+    @Mock
+    UserStorage userStorage;
+    @Mock
+    UserService userService;
 
     @BeforeEach
     public void beforeEach() throws ValidationException {
         user = User.builder()
-                .id(1)
+                .id(1L)
                 .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")
@@ -32,8 +44,11 @@ class UserControllerTest {
     }
 
     @Test
-    void findAll() {
-        userController.users.put(user.getId(), user);
+    void findAll() throws ValidationException {
+
+        when(userStorage.createUser(user)).thenReturn(user);
+        when(userStorage.findAllUser()).thenReturn(List.of(user));
+        userController.create(user);
         // action
         List<User> userList = userController.findAll();
 
@@ -62,10 +77,10 @@ class UserControllerTest {
 
     @Test
     void update() throws ValidationException {
-        userController.users.put(user.getId(), user);
+        userController.update(user);
         String name = "BEEEEEEEEEn";
         User expectedUser = User.builder()
-                .id(1)
+                .id(1L)
                 .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")
@@ -83,9 +98,9 @@ class UserControllerTest {
 
     @Test
     void updateInvalideEmail() throws ValidationException {
-        userController.users.put(user.getId(), user);
+        userController.update(user);
         User expectedUser = User.builder()
-                .id(1)
+                .id(1L)
                 .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjhcome.ru")
                 .login("nnn")
@@ -101,9 +116,9 @@ class UserControllerTest {
 
     @Test
     void updateInvalideBirthday() throws ValidationException {
-        userController.users.put(user.getId(), user);
+        userController.update(user);
         User expectedUser = User.builder()
-                .id(1)
+                .id(1L)
                 .birthday(LocalDate.of(2024, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")
@@ -119,9 +134,9 @@ class UserControllerTest {
 
     @Test
     void updateInvalideLogin() throws ValidationException {
-        userController.users.put(user.getId(), user);
+        userController.update(user);
         User expectedUser = User.builder()
-                .id(1)
+                .id(1L)
                 .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjh@come.ru")
                 .login("")
@@ -137,9 +152,9 @@ class UserControllerTest {
 
     @Test
     void updateInvalideName() throws ValidationException {
-        userController.users.put(user.getId(), user);
+        userController.update(user);
         User expectedUser = User.builder()
-                .id(1)
+                .id(1L)
                 .birthday(LocalDate.of(1985, 05, 13))
                 .email("nnjh@come.ru")
                 .login("nnn")

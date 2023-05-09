@@ -24,7 +24,7 @@ class FilmControllerTest {
     @BeforeEach
     public void beforeEach() {
         film = Film.builder()
-                .id(1)
+                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(192L)
@@ -34,8 +34,8 @@ class FilmControllerTest {
     }
 
     @Test
-    void findAll() {
-        filmController.films.put(film.getId(), film);
+    void findAll() throws ValidationException {
+        filmController.create(film);
         // action
         List<Film> filmList = filmController.findAll();
 
@@ -64,10 +64,10 @@ class FilmControllerTest {
 
     @Test
     void update() throws ValidationException {
-        filmController.films.put(film.getId(), film);
+        filmController.update(film);
         long duration = 193L;
         Film expectedFilm = Film.builder()
-                .id(1)
+                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(193L)
@@ -85,10 +85,10 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideName() {
-        filmController.films.put(film.getId(), film);
+    void updateInvalideName() throws ValidationException {
+        filmController.update(film);
         Film expectedFilm = Film.builder()
-                .id(1)
+                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(192L)
@@ -104,10 +104,10 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideDescription() {
-        filmController.films.put(film.getId(), film);
+    void updateInvalideDescription() throws ValidationException {
+        filmController.update(film);
         Film expectedFilm = Film.builder()
-                .id(1)
+                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви и " +
                         "на себя миссию по защите новых друзей от корыстных бизнесменов с Земли. Теперь ему есть за " +
                         "кого бороться — с Джейком его прекрасная возлюбленная Нейтири. " +
@@ -125,10 +125,10 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideDuration() {
-        filmController.films.put(film.getId(), film);
+    void updateInvalideDuration() throws ValidationException {
+        filmController.update(film);
         Film expectedFilm = Film.builder()
-                .id(1)
+                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(-1L)
@@ -144,10 +144,10 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateInvalideReleaseDate() {
-        filmController.films.put(film.getId(), film);
+    void updateInvalideReleaseDate() throws ValidationException {
+        filmController.update(film);
         Film expectedFilm = Film.builder()
-                .id(1)
+                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(-1L)
