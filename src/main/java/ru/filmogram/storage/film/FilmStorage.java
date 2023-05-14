@@ -7,19 +7,19 @@ import ru.filmogram.model.Film;
 import java.util.List;
 
 public interface FilmStorage {
-    public List<Film> findAllFilm();
+    List<Film> findAllFilm();
 
-    public Film createFilm(Film film) throws ValidationException;
+    Film createFilm(Film film) throws ValidationException;
 
-    public Film updateFilm(Film film) throws ValidationException;
+    Film updateFilm(Film film) throws ValidationException;
 
-    public Film addLikeFilm(Long id, Long userId) throws ObjectNotFoundException;
+    Film addLikeFilm(Long id, Long userId) throws ObjectNotFoundException;
 
-    public void deleteLikeFilm(Long id, Long userId);
+    void deleteLikeFilm(Long id, Long userId);
 
-    public List<Film> sortPopularFilm(Integer count) throws ValidationException;
+    List<Film> sortPopularFilm(Integer count) throws ValidationException;
 
-    public List<Film> getAllPopular();
+    List<Film> getAllPopular();
 
-    public Film getFilmId(Long id);
+    Film getFilmId(Long id);
 }

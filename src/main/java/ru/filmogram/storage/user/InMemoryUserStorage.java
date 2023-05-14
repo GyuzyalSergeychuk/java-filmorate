@@ -16,7 +16,7 @@ import java.util.Objects;
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
-    HashMap<Long, User> users = new HashMap<>();
+    private HashMap<Long, User> users = new HashMap<>();
 
     @Override
     public List<User> findAllUser() {
@@ -116,6 +116,4 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return user;
     }
-
-
 }

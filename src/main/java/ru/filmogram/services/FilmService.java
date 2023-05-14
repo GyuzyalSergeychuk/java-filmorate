@@ -1,6 +1,5 @@
 package ru.filmogram.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
@@ -13,7 +12,6 @@ public class FilmService {
 
     private FilmStorage filmStorage;
 
-    @Autowired
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }

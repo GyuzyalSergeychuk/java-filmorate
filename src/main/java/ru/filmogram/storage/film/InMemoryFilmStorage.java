@@ -7,14 +7,16 @@ import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    HashMap<Long, Film> films = new HashMap<>();
+    private HashMap<Long, Film> films = new HashMap<>();
 
     @Override
     public List<Film> findAllFilm() {
@@ -66,8 +68,6 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted()
                 .collect(Collectors.toList());
 
-        List<Film> clearFilms = new ArrayList<>();
-
         if (count == null) {
             return sortFilms.subList(0, 10);
         }
@@ -79,13 +79,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllPopular() {
-        List<Film> sortFilms1 = films.values()
+        return films.values()
                 .stream()
                 .sorted()
                 .collect(Collectors.toList());
-
-        return sortFilms1;
-
     }
 
     @Override
@@ -93,7 +90,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (films.containsKey(id)) {
             return films.get(id);
         }
-        throw new ObjectNotFoundException(String.format("Фильм не найден"));
+        throw new ObjectNotFoundException("Фильм не найден");
     }
 
     private Film standardCheck(Film film) throws ValidationException {

@@ -6,20 +6,20 @@ import ru.filmogram.model.User;
 import java.util.List;
 
 public interface UserStorage {
-    public List<User> findAllUser();
+    List<User> findAllUser();
 
-    public User createUser(User user) throws ValidationException;
+    User createUser(User user) throws ValidationException;
 
-    public User updateUser(User user) throws ValidationException;
+    User updateUser(User user) throws ValidationException;
 
-    public User getUserId(Long id);
+    User getUserId(Long id);
 
-    public User addFriend(Long id, Long friendId);
+    User addFriend(Long id, Long friendId);
 
-    public void deleteFriend(Long id, Long friendId);
+    void deleteFriend(Long id, Long friendId);
 
-    public List<User> getFriends(Long id);
+    List<User> getFriends(Long id);
 
-    public List<User> getCommonFriends(Long id, Long otherId);
+    List<User> getCommonFriends(Long id, Long otherId);
 
 }
