@@ -15,6 +15,8 @@ public class Film implements Comparable<Film> {
     private String name;
     private String description;
     private LocalDate releaseDate;
+    private String genre;
+    private String rating;
     // продолжительность фильма в минутах
     private long duration;
     private Set<Long> likes;

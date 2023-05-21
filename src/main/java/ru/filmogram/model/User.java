@@ -17,6 +17,7 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
+    private Boolean status;
     private Set<Long> friends;
 
     public void assignId() {
