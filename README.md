@@ -44,6 +44,16 @@ ER-diagram for Filmorate project
     * **comedy** — комедия;
     * **drama** — драма.
 
+***genre_film***
+
+Содержит информацию о популярном кино.
+
+Таблица состоит из полей:
+
+* внешний ключ **film_id** (отсылает к таблице **film**) — идентификатор фильма;
+* внешний ключ **genre_id** (отсылает к таблице **genre**) —идентификатор жанра;
+
+
 ***like***
 
 Содержит информацию о популярном кино.
@@ -83,11 +93,12 @@ SELECT f.film_id,
        f.name,
        f.description,
        f.releaseDate,
-       g.genre,
+       GROUP_CONCAT(g.name) AS genreFilm,
        r.rating
        GROUP_CONCAT(l.user_id) AS listOfUsersLike
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id = g.genre_id
+LEFT JOIN genre AS g ON gf.genre_id = g.genre_id
+LEFT JOIN genre_film AS gf ON f.genre_id = gf.genre_id
 LEFT JOIN rating AS r ON f.rating = r.rating
 LEFT JOIN like AS l ON f.film_id = l.film_id;
 ```
@@ -98,7 +109,7 @@ SELECT f.film_id,
        f.name,
        f.description,
        f.releaseDate,
-       g.genre,
+       GROUP_CONCAT(gf.name) AS genreFilm,
        r.rating
        GROUP_CONCAT(l.user_id) AS listOfUsersLike
        (SELECT COUNT (user_id) AS popular
@@ -106,7 +117,8 @@ SELECT f.film_id,
        GROUP BY film_id
        ORDER BY popular DESC) AS like 
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id = g.genre_id
+LEFT JOIN genre AS g ON gf.genre_id = g.genre_id
+LEFT JOIN genre_film AS gf ON f.genre_id = gf.genre_id
 LEFT JOIN rating AS r ON f.rating = r.rating
 LEFT JOIN like AS l ON f.film_id = l.film_id;
 ```
@@ -117,7 +129,7 @@ SELECT f.film_id,
        f.name,
        f.description,
        f.releaseDate,
-       g.genre,
+       GROUP_CONCAT(gf.name) AS genreFilm,
        r.rating
        GROUP_CONCAT(l.user_id) AS listOfUsersLike
        (SELECT COUNT (user_id) AS popular
@@ -125,7 +137,8 @@ SELECT f.film_id,
        GROUP BY film_id
        ORDER BY popular DESC) AS like 
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id = g.genre_id
+LEFT JOIN genre AS g ON gf.genre_id = g.genre_id
+LEFT JOIN genre_film AS gf ON f.genre_id = gf.genre_id
 LEFT JOIN rating AS r ON f.rating = r.rating
 LEFT JOIN like AS l ON f.film_id = l.film_id
 GROUP BY film_id
@@ -141,13 +154,13 @@ SELECT f.film_id,
        f.releaseDate,
        g.genre,
        r.rating
-       GROUP_CONCAT(l.user_id) AS listOfUsersLike
+       GROUP_CONCAT(l.name) AS listOfUsersLike
        (SELECT COUNT (user_id) AS popular
        FROM like
        GROUP BY film_id
        ORDER BY popular DESC) AS like 
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id = g.genre_id
+LEFT JOIN genre AS g ON gf.genre_id = g.genre_id
 LEFT JOIN rating AS r ON f.rating = r.rating
 LEFT JOIN like AS l ON f.film_id = l.film_id
 WHERE f.film_id = x;
