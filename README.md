@@ -1,7 +1,7 @@
 # java-filmorate
 ER-diagram for Filmorate project
 
-![ER-diagram](../java-filmorate/filmorate.jpg)
+![ER-diagram](src/main/resources/filmorate.jpg)
 
 ### Описание базы данных Filmorate
 
