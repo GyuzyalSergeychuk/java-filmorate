@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
 import ru.filmogram.services.UserService;
-import ru.filmogram.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -16,23 +15,21 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserStorage userStorage;
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping()
     public List<User> findAll() {
-        return userStorage.findAllUser();
+        return userService.findAll();
     }
 
     @PostMapping()
     public User create(@RequestBody User user) throws ValidationException {
-        return userStorage.createUser(user);
+        return userService.create(user);
     }
 
     @PutMapping()
     public User update(@RequestBody User user) throws ValidationException {
-        return userStorage.updateUser(user);
+        return userService.update(user);
     }
 
     @GetMapping("/{id}")

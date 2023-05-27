@@ -6,6 +6,7 @@ import ru.filmogram.model.User;
 import java.util.List;
 
 public interface UserStorage {
+
     List<User> findAllUser();
 
     User createUser(User user) throws ValidationException;

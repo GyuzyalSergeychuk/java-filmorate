@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-@Component
+@Component()
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
@@ -115,5 +115,9 @@ public class InMemoryUserStorage implements UserStorage {
             log.error("Имя пользователя изменено на login: {}", user);
         }
         return user;
+    }
+
+    public void setUsers(HashMap<Long, User> users) {
+        this.users = users;
     }
 }

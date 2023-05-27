@@ -1,6 +1,8 @@
 package ru.filmogram.services;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
 import ru.filmogram.storage.user.UserStorage;
 
@@ -9,10 +11,21 @@ import java.util.List;
 @Service
 public class UserService {
 
-    private UserStorage userStorage;
+    @Qualifier("userDbStorageImpl")
+    private final UserStorage userStorage;
 
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
+    }
+
+    public List<User> findAll() {
+        return userStorage.findAllUser();
+    }
+    public User create(User user) throws ValidationException {
+        return userStorage.createUser(user);
+    }
+    public User update(User user) throws ValidationException {
+        return userStorage.updateUser(user);
     }
 
     public User getIdUser(Long id) {
