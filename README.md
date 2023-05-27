@@ -181,7 +181,7 @@ SELECT u.user_id,
        u.name,
        u.email,
        u.login
-FROM user AS u
+FROM users AS u
 WHERE u.user_id = x;
 ```
 
@@ -205,7 +205,7 @@ SELECT u.user_id,
        u.name,
        u.email,
        u.login,
-FROM user AS u
+FROM users AS u
 LEFT JOIN friends AS f ON u.user_id = f.friend_wto_id
 LEFT JOIN friends AS f ON u.user_id = f.friend_one_id
 WHERE f.status = 'true'
@@ -216,10 +216,19 @@ SELECT u.user_id,
        u.name,
        u.email,
        u.login,
-FROM user AS u
+FROM users AS u
 LEFT JOIN friends AS f ON u.user_id = f.friend_wto_id
 LEFT JOIN friends AS f ON u.user_id = f.friend_one_id
 WHERE f.status = 'true'
       AND f.friend_one_id = y 
       OR f.friend_wto_id = y;
+```
+
+```
+INSERT INTO users (
+       name,
+       email,
+       login,
+       birthday)
+VALUES ( ?, ?, ?, ?);
 ```

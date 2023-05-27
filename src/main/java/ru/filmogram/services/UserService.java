@@ -28,7 +28,7 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public User getIdUser(Long id) {
+    public User getIdUser(Long id) throws ValidationException {
         return userStorage.getUserId(id);
     }
 

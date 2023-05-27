@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable("id") Long id) {
+    public User getUser(@PathVariable("id") Long id) throws ValidationException {
         return userService.getIdUser(id);
     }
 

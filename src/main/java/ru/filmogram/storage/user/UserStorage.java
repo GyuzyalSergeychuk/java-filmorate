@@ -13,7 +13,7 @@ public interface UserStorage {
 
     User updateUser(User user) throws ValidationException;
 
-    User getUserId(Long id);
+    User getUserId(Long id) throws ValidationException;
 
     User addFriend(Long id, Long friendId);
 
