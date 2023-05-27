@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
 import ru.filmogram.storage.user.UserStorage;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Component()
+@Repository
 @Primary
 public class UserDbStorageImpl implements UserStorage {
 
@@ -25,6 +26,7 @@ public class UserDbStorageImpl implements UserStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Transactional
     @Override
     public List<User> findAllUser() {
         ArrayList<User> users = new ArrayList<>();

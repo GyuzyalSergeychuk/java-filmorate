@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-@Component()
+@Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
