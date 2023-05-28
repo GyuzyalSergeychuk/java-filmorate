@@ -1,5 +1,6 @@
 package ru.filmogram.services;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
@@ -10,7 +11,20 @@ import java.util.List;
 @Service
 public class FilmService {
 
+    @Qualifier("filmDbStorageImpl")
     private FilmStorage filmStorage;
+
+    public List<Film> findAll() {
+        return filmStorage.findAllFilm();
+    }
+
+    public Film create(Film film) throws ValidationException {
+        return filmStorage.createFilm(film);
+    }
+
+    public Film update(Film film) throws ValidationException {
+        return filmStorage.updateFilm(film);
+    }
 
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;

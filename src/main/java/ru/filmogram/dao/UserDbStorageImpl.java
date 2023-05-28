@@ -1,4 +1,4 @@
-package ru.filmogram.storage.user.dao;
+package ru.filmogram.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -23,8 +23,7 @@ public class UserDbStorageImpl implements UserStorage {
     @Autowired
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate)
-    {
+    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -60,35 +59,21 @@ public class UserDbStorageImpl implements UserStorage {
                 "login," +
                 "birthday)" +
                 "VALUES ( ?, ?, ?, ?) DO NOTHING", user.getName(), user.getEmail(), user.getLogin(), user.getBirthday());
-        return User.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .login(user.getLogin())
-                .birthday(user.getBirthday())
-                .build();
+        return user;
     }
 
     @Override
     public User updateUser(User user) throws ValidationException {
         jdbcTemplate.queryForRowSet(
-                "INSERT INTO users (" +
-                        "user_id,name, " +
+                "UPDATE user SET " +
+                        "name, " +
                         "email, " +
                         "login, " +
-                        "birthday) " +
-                "VALUES ( ?, ?, ?, ?) " +
-                        "ON CONFLICT (user_id) " +
-                        "DO UPDATE SET name = EXCLUDED.name, " +
-                        "email = EXCLUDED.email, " +
-                        "login = EXCLUDED.login, " +
-                        "birthday = EXCLUDED.birthday",
-                user.getName(), user.getEmail(), user.getLogin(), user.getBirthday());
-        return User.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .login(user.getLogin())
-                .birthday(user.getBirthday())
-                .build();
+                        "birthday" +
+                        "WHERE id = ?",
+                user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
+        return user;
+
     }
 
     @Override
@@ -112,21 +97,25 @@ public class UserDbStorageImpl implements UserStorage {
     }
 
     @Override
-    public User addFriend(Long id, Long friendId) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("INSERT INTO friends (friend_one_id, friend_two_id, status) " +
-                "VALUES ( ?, ?, ?)", id, friendId, 1);
+    public User addFriend(Long userid, Long friendId) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(
+                "UPDATE friends SET " +
+                "friend_one_id = ?," +
+                "friend_two_id = ?," +
+                "status = ?," +
+                "WHERE id = ?",
+                userid, friendId, 1);
         return User.builder()
-                .id(id)
+                .id(userid)
                 .friends(Collections.singleton(friendId))
                 .status(userRows.getBoolean(1))
                 .build();
     }
 
     @Override
-    public void deleteFriend(Long id, Long friendId) {
-        jdbcTemplate.queryForRowSet( "delete from friends where friend_one_id = ?,AND friend_two_id = ?", id, friendId);
+    public void deleteFriend(Long userId, Long friendId) {
+        jdbcTemplate.queryForRowSet( "delete from friends where friend_one_id = ?,AND friend_two_id = ?", userId, friendId);
     }
-
 
     @Override
     public List<User> getFriends(Long id) {

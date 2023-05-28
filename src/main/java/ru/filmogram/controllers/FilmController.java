@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 import ru.filmogram.services.FilmService;
-import ru.filmogram.storage.film.FilmStorage;
 
 import java.util.List;
 
@@ -13,32 +12,26 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private FilmStorage filmStorage;
     private FilmService filmService;
 
     @Autowired
-    public FilmController(FilmStorage filmStorage, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-    }
-
-    public FilmController(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
     }
 
     @GetMapping()
     public List<Film> findAll() {
-        return filmStorage.findAllFilm();
+        return filmService.findAll();
     }
 
     @PostMapping()
     public Film create(@RequestBody Film film) throws ValidationException {
-        return filmStorage.createFilm(film);
+        return filmService.create(film);
     }
 
     @PutMapping()
     public Film update(@RequestBody Film film) throws ValidationException {
-        return filmStorage.updateFilm(film);
+        return filmService.update(film);
     }
 
     @PutMapping("{id}/like/{userId}")
