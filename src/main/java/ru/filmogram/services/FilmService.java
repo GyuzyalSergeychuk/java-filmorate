@@ -30,7 +30,7 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
-    public Film addLike(Long id, Long userId) {
+    public Film addLike(Long id, Long userId) throws ValidationException {
         return filmStorage.addLikeFilm(id, userId);
     }
 

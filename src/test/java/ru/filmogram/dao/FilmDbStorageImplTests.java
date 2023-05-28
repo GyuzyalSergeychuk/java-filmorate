@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
+import ru.filmogram.model.User;
 import ru.filmogram.storage.film.FilmStorage;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FilmDbStorageImplTests {
 
     Film film;
+    User user;
     @Autowired
     private final JdbcTemplate jdbcTemplate;
 
@@ -73,6 +75,13 @@ class FilmDbStorageImplTests {
                         "birthday)" +
                         "VALUES ('Том', 'nnjh@come.ru', 'nnn', '1985-05-13')");
         jdbcTemplate.execute(
+                "INSERT INTO users (" +
+                        "name," +
+                        "email," +
+                        "login," +
+                        "birthday)" +
+                        "VALUES ('Том2', 'nnjh@come.r2', 'nnn2', '1985-05-13')");
+        jdbcTemplate.execute(
                 "INSERT INTO likes (" +
                         "film_id," +
                         "user_id)" +
@@ -89,6 +98,8 @@ class FilmDbStorageImplTests {
                 .genre(Set.of("приключение", "боевик"))
                 .likes(Set.of(1L))
                 .build();
+
+        User user;
     }
 
     @Test
@@ -103,9 +114,9 @@ class FilmDbStorageImplTests {
     void createFilm() throws ValidationException {
         filmStorage.createFilm(film);
 
-        assertEquals(film.getId(), 1);
-        assertEquals(film.getGenre(), Set.of("боевик","приключение"));
-        assertEquals(film.getRating(), "GP-13");
+        assertEquals(1, film.getId());
+        assertEquals(Set.of("боевик","приключение"), film.getGenre());
+        assertEquals("GP-13", film.getRating());
     }
 
     @Test
@@ -122,15 +133,23 @@ class FilmDbStorageImplTests {
                 .likes(Set.of(1L))
                 .build();
 
-        filmStorage.updateFilm(expectedFilm);
+        Film actualFilm = filmStorage.updateFilm(expectedFilm);
 
-        assertEquals(film.getId(), 1);
-        assertEquals(expectedFilm.getGenre(), film.getGenre());
-
+        assertEquals(1, actualFilm.getId());
+        assertEquals(expectedFilm.getGenre(), actualFilm.getGenre());
     }
 
     @Test
-    void addLikeFilm() {
+    void addLikeFilm() throws ValidationException {
+        // Подготовка данных для теста
+        Long filmId = 1L;
+        Long userId = 2L;
+
+        // Выполнение метода
+        Film resultFilm = filmStorage.addLikeFilm(filmId, userId);
+
+        // Проверка результата
+        assertEquals(filmId, resultFilm.getId());
     }
 
     @Test

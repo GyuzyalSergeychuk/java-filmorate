@@ -13,7 +13,7 @@ public interface FilmStorage {
 
     Film updateFilm(Film film) throws ValidationException;
 
-    Film addLikeFilm(Long id, Long userId) throws ObjectNotFoundException;
+    Film addLikeFilm(Long id, Long userId) throws ObjectNotFoundException, ValidationException;
 
     void deleteLikeFilm(Long id, Long userId);
 

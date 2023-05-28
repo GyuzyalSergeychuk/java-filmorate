@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 import ru.filmogram.storage.film.FilmStorage;
@@ -66,6 +65,20 @@ public class FilmDbStorageImpl implements FilmStorage {
     @Override
     public Film createFilm(Film film) throws ValidationException {
         jdbcTemplate.update(
+                "MERGE INTO rating (" +
+                        "name) " +
+                        "KEY(name)" +
+                        "VALUES (?) ",
+                film.getRating());
+        for(String genre : film.getGenre()) {
+            jdbcTemplate.update(
+                    "MERGE INTO genre (" +
+                            "name) " +
+                            "KEY(name)" +
+                            "VALUES (?) ",
+                    genre);
+        }
+        jdbcTemplate.update(
                 "INSERT INTO film (" +
                     "film_name," +
                     "description," +
@@ -73,64 +86,69 @@ public class FilmDbStorageImpl implements FilmStorage {
                     "duration)" +
                     "VALUES (?, ?, ?, ?)",
                 film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration());
-        jdbcTemplate.update(
-                "INSERT INTO rating (" +
-                        "name)" +
-                        "VALUES (?)",
-                film.getRating());
-        for(String genre : film.getGenre()) {
-            jdbcTemplate.update(
-                    "INSERT INTO genre (" +
-                            "name)" +
-                            "VALUES (?)",
-                    genre);
-        }
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) throws ValidationException {
-        for(String genre : film.getGenre()) {
-            jdbcTemplate.update(
-                    "INSERT INTO genre (" +
-                            "name)" +
-                            "VALUES (?)",
-                    genre);}
+        // Обновление рейтинга
         jdbcTemplate.update(
-                "UPDATE film SET " +
-                        "film_name = ?, " +
-                        "description = ?," +
-                        "releaseDate = ?," +
-                        "duration = ?" +
-                        "WHERE film_id = ?",
-                film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
+                "MERGE INTO rating (name) KEY(name) VALUES (?)",
+                film.getRating());
 
-            jdbcTemplate.queryForRowSet(
-                    "SELECT f.film_id," +
-                            "f.film_name, " +
-                            "f.description," +
-                            "f.releaseDate," +
-                            "f.duration," +
-                            "GROUP_CONCAT(g.name) AS genreFilm," +
-                            "r.name, " +
-                            "GROUP_CONCAT(l.user_id) AS listOfUsersLike " +
-                            "FROM film AS f " +
-                            " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-                            " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-                            " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-                            " LEFT JOIN likes AS l ON f.film_id = l.film_id");
+        // Обновление или вставка жанров
+        for (String genreName : film.getGenre()) {
+            // Проверяем, существует ли жанр с данным названием в базе данных
+            Integer genreId = jdbcTemplate.queryForObject(
+                    "SELECT genre_id FROM genre WHERE name = ?",
+                    Integer.class,
+                    genreName);
+
+            // Если жанр не найден, вставляем новый жанр и получаем его genre_id
+            if (genreId == null) {
+                jdbcTemplate.update(
+                        "INSERT INTO genre (name) VALUES (?)",
+                        genreName);
+                genreId = jdbcTemplate.queryForObject(
+                        "SELECT genre_id FROM genre WHERE name = ?",
+                        Integer.class,
+                        genreName);
+            }
+
+            // Вставляем запись в таблицу genre_film
+            jdbcTemplate.update(
+                    "INSERT INTO genre_film (film_id, genre_id) VALUES (?, ?)",
+                    film.getId(), genreId);
+        }
+
+        // Обновление информации о фильме
+        jdbcTemplate.update(
+                "UPDATE film SET film_name = ?, description = ?, releaseDate = ?, duration = ? WHERE film_id = ?",
+                film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
 
         return film;
     }
 
     @Override
-    public Film addLikeFilm(Long filmId, Long userId) throws ObjectNotFoundException {
-        jdbcTemplate.queryForRowSet(
-                "INSERT INTO likes (" +
-                        "film_id," +
-                        "user_id" +
-                        "VALUES (?, ?) DO NOTHING",
+    public Film addLikeFilm(Long filmId, Long userId) throws ValidationException {
+        // Проверяем, существует ли уже запись с такими film_id и user_id
+        Integer existingRecordCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
+                Integer.class,
                 filmId, userId);
+
+        //TODO убрать это и сделать логирование, а так же сделать return с помощью селекта этого фильма
+        if (existingRecordCount != null && existingRecordCount > 0) {
+            // Запись уже существует, можно выполнить дополнительные действия или выбросить исключение
+            // в зависимости от требований вашего приложения
+            throw new ValidationException("Like record already exists.");
+        }
+
+        // Вставляем новую запись
+        jdbcTemplate.update(
+                "INSERT INTO likes (film_id, user_id) VALUES (?, ?)",
+                filmId, userId);
+
         return Film.builder()
                 .id(filmId)
                 .build();
