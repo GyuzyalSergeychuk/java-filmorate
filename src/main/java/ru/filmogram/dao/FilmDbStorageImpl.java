@@ -15,8 +15,6 @@ import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 import ru.filmogram.storage.film.FilmStorage;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,6 +48,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         String ratingId = jdbcTemplate.queryForObject(ratingIdSql, String.class, film.getRating());
 
         // Обновление таблицы genre
+        //TODO надо помимо таблицы жанров заполнять еще и таблицу фильм-жанр
         for (String genre : film.getGenre()) {
             String queryGenre = "MERGE INTO genre (name) KEY(name) VALUES (?)";
             Object[] paramsGenre = {genre};
@@ -58,21 +57,12 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         // Вставка данных в таблицу film
         String queryInsert = "INSERT INTO film (film_name, description, releaseDate, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
-        Object[] paramsInsert = {film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), ratingId};
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(queryInsert, Statement.RETURN_GENERATED_KEYS);
-            for (int i = 0; i < paramsInsert.length; i++) {
-                ps.setObject(i + 1, paramsInsert[i]);
-            }
-            return ps;
-        }, keyHolder);
-
-        Long filmId = keyHolder.getKey().longValue();
+        Object[] paramsInsert = {film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), ratingId};KeyHolder keyHolder = new GeneratedKeyHolder();
 
         // Вызов метода getFilmId с полученным идентификатором
-        Film createdFilm = getFilmId(filmId);
+        //TODO временное решение: что бы убедиться что фильм реально записался в базу, Предполагаю что проблема
+        //TODO может быть в запросе метода getFilmId
+        Film createdFilm = getFilmId(1L);
 
         return createdFilm;
     }
@@ -83,7 +73,22 @@ public class FilmDbStorageImpl implements FilmStorage {
         Film finalFilm = null;
         try {
             finalFilm = jdbcTemplate.queryForObject(
-                    "SELECT * FROM film WHERE film_id = ? ",
+                    "SELECT f.film_id, " +
+                            "f.name, " +
+                            "f.description, " +
+                            "f.releaseDate, " +
+                            "g.genre, " +
+                            "r.rating, " +
+                            "GROUP_CONCAT(l.name) AS listOfUsersLike " +
+                            "(SELECT COUNT (user_id) AS popular " +
+                            "FROM like " +
+                            "GROUP BY film_id " +
+                            "ORDER BY popular DESC) AS like " +
+                            "FROM film AS f " +
+                            "LEFT JOIN genre AS g ON gf.genre_id = g.genre_id " +
+                            "LEFT JOIN rating AS r ON f.rating = r.rating " +
+                            "LEFT JOIN like AS l ON f.film_id = l.film_id " +
+                            "WHERE f.film_id = ?; ",
                     Film.class,
                     id);
         } catch (DataAccessException e) {
