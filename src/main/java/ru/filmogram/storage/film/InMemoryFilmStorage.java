@@ -54,11 +54,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteLikeFilm(Long id, Long userId) {
+    public boolean deleteLikeFilm(Long id, Long userId) {
         if (userId < 1) {
             throw new ObjectNotFoundException("Такой пользователь не существует");
         }
         films.get(id).deleteLike(userId);
+        return true;
     }
 
     @Override
