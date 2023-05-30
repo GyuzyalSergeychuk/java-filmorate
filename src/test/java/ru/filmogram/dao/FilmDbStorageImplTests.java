@@ -34,8 +34,6 @@ class FilmDbStorageImplTests {
 
     @BeforeEach
     public void beforeEach() throws ValidationException {
-
-
     }
 
     @Test
