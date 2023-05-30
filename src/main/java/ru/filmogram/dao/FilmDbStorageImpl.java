@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.exceptions.ValidationException;
+import ru.filmogram.mapper.FilmMapper;
 import ru.filmogram.model.Film;
 import ru.filmogram.storage.film.FilmStorage;
 
@@ -35,43 +35,73 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) throws ValidationException {
-        // Обновление таблицы rating
+        Integer lastRatingId = 0;
         List<String> ratingNames = jdbcTemplate.query(
                 "SELECT name FROM rating WHERE name = ?",
                 (resultSet, rowNum) -> resultSet.getString("name"),
                 film.getRating());
         if (ratingNames.isEmpty()) {
-            String queryRating = "INSERT INTO rating (name) VALUES (?)";
-            jdbcTemplate.update(queryRating, film.getRating());
+            SimpleJdbcInsert simpleJdbcInsertRating = new SimpleJdbcInsert(jdbcTemplate)
+                    .withTableName("rating")
+                    .usingGeneratedKeyColumns("rating_id");
+            Map<String, Object> parametersRating = new HashMap<String, Object>();
+            parametersRating.put("name", film.getRating());
+            lastRatingId = (Integer) simpleJdbcInsertRating.executeAndReturnKey(parametersRating);
         }
-        String ratingIdSql = "SELECT rating_id FROM rating WHERE name = ?";
-        String ratingId = jdbcTemplate.queryForObject(ratingIdSql, String.class, film.getRating());
 
-        // Обновление таблицы genre
-        //TODO надо помимо таблицы жанров заполнять еще и таблицу фильм-жанр
         for (String genre : film.getGenre()) {
-            String queryGenre = "MERGE INTO genre (name) KEY(name) VALUES (?)";
-            Object[] paramsGenre = {genre};
-            jdbcTemplate.update(queryGenre, paramsGenre);
+            List<String> genreFilm = jdbcTemplate.query(
+                    "SELECT name FROM genre WHERE name = ?",
+                    (resultSet, rowNum) -> resultSet.getString("genre"),
+                    genre);
+            if (genreFilm.isEmpty()) {
+                String queryGenre = "INSERT INTO genre (name) VALUES (?)";
+                jdbcTemplate.update(queryGenre, genre);
+            }
+        }
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("film")
+                .usingGeneratedKeyColumns("film_id");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("film_name", film.getName());
+        parameters.put("description", film.getDescription());
+        parameters.put("releaseDate", film.getReleaseDate());
+        parameters.put("duration", film.getDuration());
+        parameters.put("rating_id", lastRatingId);
+
+        Long lastFilmId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+
+        for (String genre : film.getGenre()) {
+            jdbcTemplate.update("INSERT INTO genre_film (film_id, genre_id) VALUES (?, " +
+                    "(SELECT genre_id FROM genre WHERE name = ?))", lastFilmId, genre);
         }
 
-        // Вставка данных в таблицу film
-        String queryInsert = "INSERT INTO film (film_name, description, releaseDate, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
-        Object[] paramsInsert = {film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), ratingId};KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = "SELECT * FROM FILM WHERE film_id = ?";
+//        String query = "SELECT f.film_id,"  +
+//                "              f.film_name," +
+//                "              f.description," +
+//                "              f.releaseDate," +
+//                "              f.duration," +
+//                "              GROUP_CONCAT(g.name) AS genreFilm," +
+//                "              r.name" +
+//                "              FROM film AS f" +
+//                "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+//                "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+//                "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+//                "              WHERE film_id = ?";
+        Film finalFilm = jdbcTemplate.queryForObject(
+                query, new Object[] { lastFilmId }, new FilmMapper());
 
-        // Вызов метода getFilmId с полученным идентификатором
-        //TODO временное решение: что бы убедиться что фильм реально записался в базу, Предполагаю что проблема
-        //TODO может быть в запросе метода getFilmId
-        Film createdFilm = getFilmId(1L);
-
-        return createdFilm;
-    }
+        return finalFilm;
+            }
 
     @Override
     public Film getFilmId(Long id) {
 
         Film finalFilm = null;
         try {
+            //TODO вот этот запрос как буд-то неправильный. Похоже нет джоина с GENRE-FILM
             finalFilm = jdbcTemplate.queryForObject(
                     "SELECT f.film_id, " +
                             "f.name, " +

@@ -1,7 +1,6 @@
 package ru.filmogram.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,28 +35,27 @@ class FilmDbStorageImplTests {
     @BeforeEach
     public void beforeEach() throws ValidationException {
 
-        film = Film.builder()
-                .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
-                        "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
-                .duration(192L)
-                .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating("GP-13")
-                .genre(Set.of("приключение", "боевик"))
-                .likes(Set.of(1L))
-                .build();
+
     }
 
     @Test
     void createFilm() throws ValidationException {
         // Вызов метода createFilm
+        film = Film.builder()
+                .description("текст хороший")
+                .duration(192L)
+                .name("Аватар: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating("GP-666")
+                .genre(Set.of("приключение", "боевик"))
+                .build();
         Film createdFilm = filmStorage.createFilm(film);
 
         // Проверка, что фильм успешно создан
-        Assertions.assertNotNull(createdFilm.getId());
-
-        // Проверка, что данные фильма сохранены в базе данных
-
+        assertEquals(film.getName(), createdFilm.getName());
+        assertEquals(film.getDuration(), createdFilm.getDuration());
+        assertEquals(film.getReleaseDate(), createdFilm.getReleaseDate());
+        assertEquals(film.getDescription(), createdFilm.getDescription());
     };
 
     @Test
