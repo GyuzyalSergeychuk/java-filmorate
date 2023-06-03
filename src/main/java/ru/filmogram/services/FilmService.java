@@ -34,8 +34,8 @@ public class FilmService {
         return filmStorage.addLikeFilm(id, userId);
     }
 
-    public void deleteLike(Long id, Long userId) {
-        filmStorage.deleteLikeFilm(id, userId);
+    public boolean deleteLike(Long id, Long userId) {
+        return filmStorage.deleteLikeFilm(id, userId);
     }
 
     public List<Film> sortFilmCount(Integer count) throws ValidationException {

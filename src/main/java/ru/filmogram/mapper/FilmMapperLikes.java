@@ -6,11 +6,12 @@ import ru.filmogram.model.Film;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.filmogram.util.Util.checkNoGenre;
 
-public class FilmMapper implements RowMapper<Film> {
+public class FilmMapperLikes implements RowMapper<Film> {
 
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -23,16 +24,10 @@ public class FilmMapper implements RowMapper<Film> {
                 .releaseDate(LocalDate.parse(rs.getString("releaseDate")))
                 .rating(rs.getString("name"))
                 .genre(checkNoGenre(rs.getString("genreFilm")))
-//                .likes(Stream.of(rs.getString("likes").split(","))
-//                        .map(Long::parseLong)
-//                        .collect(Collectors.toSet()))
+                .likes(Stream.of(rs.getString("listOfUsersLike").split(","))
+                        .map(Long::parseLong)
+                        .collect(Collectors.toSet()))
                 .build();
     }
-
-    private Set<String> checkNoLike(String likes) {
-        if (likes == null) {
-            return Set.of();
-        }
-        return Set.of(likes.split(","));
-    }
 }
+

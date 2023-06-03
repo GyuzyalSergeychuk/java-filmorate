@@ -35,13 +35,15 @@ public class FilmController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public Film updateLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) throws ValidationException {
+    public Film addLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) throws ValidationException {
         return filmService.addLike(id, userId);
     }
 
+    //TODO надо возвращать код статус возврата
     @DeleteMapping("{id}/like/{userId}")
-    public void deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
+    public boolean deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
         filmService.deleteLike(id, userId);
+        return true;
     }
 
     @GetMapping("/popular")

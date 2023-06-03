@@ -1,14 +1,14 @@
 package ru.filmogram.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
+import ru.filmogram.model.User;
 import ru.filmogram.storage.film.FilmStorage;
 import ru.filmogram.storage.user.UserStorage;
 
@@ -24,21 +24,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FilmDbStorageImplTests {
 
     Film film;
-    @Autowired
-    private final JdbcTemplate jdbcTemplate;
+    User user;
 
     @Autowired
     FilmStorage filmStorage;
     @Autowired
     UserStorage userStorage;
 
-    @BeforeEach
-    public void beforeEach() throws ValidationException {
+    @AfterEach
+    void init() {
+
     }
 
     @Test
     void createFilm() throws ValidationException {
-        // Вызов метода createFilm
         film = Film.builder()
                 .description("текст хороший")
                 .duration(192L)
@@ -49,7 +48,6 @@ class FilmDbStorageImplTests {
                 .build();
         Film createdFilm = filmStorage.createFilm(film);
 
-        // Проверка, что фильм успешно создан
         assertEquals(film.getName(), createdFilm.getName());
         assertEquals(film.getDuration(), createdFilm.getDuration());
         assertEquals(film.getReleaseDate(), createdFilm.getReleaseDate());
@@ -57,57 +55,156 @@ class FilmDbStorageImplTests {
     };
 
     @Test
-    void findAllFilm() {
+    void getFilmId() throws ValidationException {
+        film = Film.builder()
+                .description("текст хороший")
+                .duration(192L)
+                .name("Аватар: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating("GP-666")
+                .genre(Set.of("приключение", "боевик"))
+                .build();
+        filmStorage.createFilm(film);
+        film = Film.builder()
+                .description("текст хороший1111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build();
+        filmStorage.createFilm(film);
+        assertEquals((Film.builder()
+                .id(1L)
+                .description("текст хороший")
+                .duration(192L)
+                .name("Аватар: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating("GP-666")
+                .genre(Set.of("приключение", "боевик"))
+                .build()), filmStorage.getFilmId(1l));
+        assertEquals((Film.builder()
+                .id(2L)
+                .description("текст хороший1111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build()), filmStorage.getFilmId(2l));
+    }
+
+    @Test
+    void findAllFilm() throws ValidationException {
+        film = Film.builder()
+                .description("текст хороший")
+                .duration(192L)
+                .name("Аватар: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating("GP-666")
+                .genre(Set.of("приключение", "боевик"))
+                .build();
+        filmStorage.createFilm(film);
+        film = Film.builder()
+                .description("текст хороший1111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build();
+        filmStorage.createFilm(film);
         List<Film> films = filmStorage.findAllFilm();
 
         assertEquals(1, films.get(0).getId());
-        assertEquals("GP-13", films.get(0).getRating());
+        assertEquals("GP-666", films.get(0).getRating());
+        assertEquals(Set.of("приключение","боевик", "фантастика"), films.get(1).getGenre());
     }
 
     @Test
     void updateFilm() throws ValidationException {
-        Film expectedFilm = Film.builder()
-                .id(1L)
-                .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
-                        "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейкrrrrrr готов дать им отпор.")
-                .duration(192L)
-                .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating("GP-13")
+        film = Film.builder()
+                .description("текст хороший1111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
                 .genre(Set.of("приключение", "боевик", "фантастика"))
-                .likes(Set.of(1L))
+                .build();
+        filmStorage.createFilm(film);
+
+        film = Film.builder()
+                .id(1l)
+                .description("новый")
+                .duration(196L)
+                .name("Аватар: ПутьНОВЫЙ")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("R")
+                .genre(Set.of("приключение", "фантастика"))
                 .build();
 
-        Film actualFilm = filmStorage.updateFilm(expectedFilm);
+        Film actualFilm = filmStorage.updateFilm(film);
 
         assertEquals(1, actualFilm.getId());
-        assertEquals(expectedFilm.getGenre(), actualFilm.getGenre());
+        assertEquals(film.getGenre(), actualFilm.getGenre());
+        assertEquals(film.getRating(), actualFilm.getRating());
+        assertEquals(film.getDuration(), actualFilm.getDuration());
     }
 
     @Test
     void addLikeFilm() throws ValidationException {
-        // Подготовка данных для теста
-        Long filmId = 1L;
-        Long userId = 2L;
+        film = Film.builder()
+                .description("текст хороший1111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build();
+        filmStorage.createFilm(film);
+        user = User.builder()
+                .name("Том1")
+                .email("nnjh@come.1")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        userStorage.createUser(user);
+        user = User.builder()
+                .name("Том2")
+                .email("nnjh@come.2")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        userStorage.createUser(user);
 
-        // Выполнение метода
-        Film resultFilm = filmStorage.addLikeFilm(filmId, userId);
+        Film film1 = filmStorage.addLikeFilm(1L, 1L);
+        Film film2 = filmStorage.addLikeFilm(1L, 2L);
 
-        // Проверка результата
-        assertEquals(filmId, resultFilm.getId());
+        assertEquals(Set.of(1L, 2L), film2.getLikes());
     }
 
     @Test
-    void deleteLikeFilm() {
-        // Подготовка данных для теста
-        Long filmId = 1L;
-        Long userId = 1L;
+    void deleteLikeFilm() throws ValidationException {
+        film = Film.builder()
+                .description("текст хороший1111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build();
+        filmStorage.createFilm(film);
+        user = User.builder()
+                .name("Том1")
+                .email("nnjh@come.1")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        userStorage.createUser(user);
+        Film film1 = filmStorage.addLikeFilm(1L, 1L);
+        boolean isDeleteLikeFromFilm = filmStorage.deleteLikeFilm(1L, 1L);
 
-        // Выполнение метода
-        boolean result = filmStorage.deleteLikeFilm(filmId, userId);
-
-        // Проверка результата
-        assertEquals(true, filmStorage.deleteLikeFilm(filmId, userId));
+        assertEquals(true, isDeleteLikeFromFilm);
     }
 
     @Test
@@ -119,12 +216,5 @@ class FilmDbStorageImplTests {
     @Test
     void getAllPopular() {
 
-    }
-
-    @Test
-    void getFilmId() {
-        Long filmId = 1L;
-
-        assertEquals(filmId, filmStorage.getFilmId(1l));
     }
 }

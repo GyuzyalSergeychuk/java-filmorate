@@ -1,12 +1,10 @@
 package ru.filmogram.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
 import ru.filmogram.storage.user.UserStorage;
@@ -22,78 +20,90 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UserDbStorageImplTest {
 
     User user;
-    @Autowired
-    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
     UserStorage userStorage;
 
-    @BeforeEach
-    public void beforeEach() {
-        jdbcTemplate.execute("INSERT INTO users (" +
-                "name," +
-                "email," +
-                "login," +
-                "birthday)" +
-                "VALUES ('Том', 'nnjh@come.ru', 'nnn', '1985-05-13')");
-        jdbcTemplate.execute("INSERT INTO users (" +
-                "name," +
-                "email," +
-                "login," +
-                "birthday)" +
-                "VALUES ('Том2', 'nnjh@come.2', 'nnn2', '1985-05-12')");
-        jdbcTemplate.execute("INSERT INTO users (" +
-                "name," +
-                "email," +
-                "login," +
-                "birthday)" +
-                "VALUES ('Том3', 'nnjh@come.3', 'nnn3', '1985-05-15')");
-        jdbcTemplate.execute(
-        "INSERT INTO friends(" +
-                "friend_one_id, " +
-                "friend_two_id, " +
-                "status) " +
-                "VALUES ('1', '2', true)");
-    }
-
     @Test
-    void findAllUser() {
+    void findAllUser() throws ValidationException {
+        user = User.builder()
+                .name("Том4")
+                .email("nnjh@come.4")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        userStorage.createUser(user);
+
+        user = User.builder()
+                .name("Том14")
+                .email("nnjh@come.1")
+                .login("11111")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        userStorage.createUser(user);
         List<User> users = userStorage.findAllUser();
 
         assertEquals(1, users.get(0).getId());
-        assertEquals("Том", users.get(0).getName());
+        assertEquals("Том4", users.get(0).getName());
+        assertEquals(2, users.get(1).getId());
     }
 
     @Test
     void createUser() throws ValidationException {
-        User user = User.builder()
-                .id(4L)
+        user = User.builder()
                 .name("Том4")
                 .email("nnjh@come.4")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
                 .build();
         User actualUser = userStorage.createUser(user);
-
         assertEquals("Том4", actualUser.getName());
     }
 
     @Test
     void updateUser() throws ValidationException {
         user = User.builder()
-                .id(4L)
-                .name("Том44")
-                .email("nnjh@come.44")
-                .login("oooo")
-                .birthday(LocalDate.of(1997, 07, 05))
+                .name("Том14")
+                .email("nnjh@come.1")
+                .login("11111")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        userStorage.createUser(user);
+        user = User.builder()
+                .id(1l)
+                .name("ТомНовый")
+                .email("nnjh@come.новый")
+                .login("новый")
+                .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User actualUser = userStorage.updateUser(user);
 
-        assertEquals("Том44", user.getName());
+        assertEquals(1, actualUser.getId());
+        assertEquals("ТомНовый", actualUser.getName());
+        assertEquals("nnjh@come.новый", actualUser.getEmail());
+        assertEquals("новый", actualUser.getLogin());
     }
 
     @Test
     void getUserId() throws ValidationException {
-        assertEquals("Том", userStorage.getUserId(1l).getName());
+        user = User.builder()
+                .name("Том14")
+                .email("nnjh@come.1")
+                .login("11111")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        userStorage.createUser(user);
+        user = User.builder()
+                .name("Том2")
+                .email("nnjh@come.2")
+                .login("2222222")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        userStorage.createUser(user);
+
+        assertEquals("Том14", userStorage.getUserId(1l).getName());
+        assertEquals("Том2", userStorage.getUserId(2l).getName());
+        assertEquals("2222222", userStorage.getUserId(2l).getLogin());
     }
 
     @Test
