@@ -19,7 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserDbStorageImplTest {
 
+    //убрать
     User user;
+    //TODO добавить чистку базы
 
     @Autowired
     UserStorage userStorage;
