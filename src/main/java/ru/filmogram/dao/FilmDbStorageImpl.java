@@ -147,6 +147,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                     .id(filmRows.getLong("film_id"))
                     .name(filmRows.getString("film_name"))
                     .description(filmRows.getString("description"))
+                    .duration(Long.parseLong(filmRows.getString("duration")))
                     .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                     .genre(checkNoGenre(filmRows.getString("genreFilm")))
                     .rating(filmRows.getString("name"))
@@ -429,6 +430,16 @@ public class FilmDbStorageImpl implements FilmStorage {
         return films;
     }
 
+    public void deleteAllTables(){
+        jdbcTemplate.update("delete from friends");
+        jdbcTemplate.update("delete from likes");
+        jdbcTemplate.update("delete from genre_film");
+        jdbcTemplate.update("delete from film");
+        jdbcTemplate.update("delete from users");
+        jdbcTemplate.update("delete from genre");
+        jdbcTemplate.update("delete from rating");
+
+    }
 }
 //"SELECT f.film_id, " +
 //        "f.film_name, " +
