@@ -17,7 +17,10 @@ import ru.filmogram.model.Film;
 import ru.filmogram.storage.film.FilmStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,6 +53,12 @@ public class FilmDbStorageImpl implements FilmStorage {
             Map<String, Object> parametersRating = new HashMap<String, Object>();
             parametersRating.put("name", film.getRating());
             lastRatingId = (Integer) simpleJdbcInsertRating.executeAndReturnKey(parametersRating);
+        } else {
+            List<Integer> ratingId =jdbcTemplate.query(
+                    "SELECT rating_id FROM rating WHERE name = ?",
+                    (resultSet, rowNum) -> resultSet.getInt("rating_id"),
+                    film.getRating());
+            lastRatingId = ratingId.get(0);
         }
 
         for (String genre : film.getGenre()) {
@@ -362,9 +371,10 @@ public class FilmDbStorageImpl implements FilmStorage {
                 "SELECT f.film_id, " +
                         " f.film_name, " +
                         " f.description, " +
+                        " f.duration, " +
                         " f.releaseDate, " +
                         " GROUP_CONCAT(g.name) AS genreFilm, " +
-                        " r.rating_id, " +
+                        " r.name, " +
                         " GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
                         " COUNT(lk.user_id) AS likes " +
                         " FROM film AS f " +
@@ -381,10 +391,11 @@ public class FilmDbStorageImpl implements FilmStorage {
                     .id(filmRows.getLong("film_id"))
                     .name(filmRows.getString("film_name"))
                     .description(filmRows.getString("description"))
+                    .duration(Long.parseLong(filmRows.getString("duration")))
                     .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                     .genre(checkNoGenre(filmRows.getString("genreFilm")))
-                    .rating(Optional.ofNullable(filmRows.getString("name")).orElse(null))
-                    .likes(Stream.of(Objects.requireNonNull(filmRows.getString("listOfUsersLike")).split(","))
+                    .rating(filmRows.getString("name"))
+                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
                             .map(Long::parseLong)
                             .collect(Collectors.toSet()))
                     .build();
@@ -399,29 +410,32 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
                 "SELECT f.film_id, " +
-                        "f.film_name, " +
-                        "f.description, " +
-                        "f.releaseDate, " +
-                        "GROUP_CONCAT(gf.name) AS genreFilm, " +
-                        "r.rating_id " +
-                        "GROUP_CONCAT(l.user_id) AS listOfUsersLike " +
-                        "(SELECT COUNT (user_id) AS popular " +
-                        "FROM likes " +
-                        "GROUP BY film_id " +
-                        "ORDER BY popular DESC) AS likes " +
-                        "FROM film AS f " +
-                        "LEFT JOIN genre_film AS gf ON f.genre_id = gf.genre_id " +
-                        "LEFT JOIN genre AS g ON gf.genre_id = g.genre_id " +
-                        "LEFT JOIN rating AS r ON f.rating = r.rating " +
-                        "LEFT JOIN like AS l ON f.film_id = l.film_id");
+                        " f.film_name, " +
+                        " f.description, " +
+                        " f.duration, " +
+                        " f.releaseDate, " +
+                        " GROUP_CONCAT(g.name) AS genreFilm, " +
+                        " r.name, " +
+                        " GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
+                        " COUNT(lk.user_id) AS likes " +
+                        " FROM film AS f " +
+                        " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                        " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                        " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                        " LEFT JOIN likes AS l ON f.film_id = l.film_id" +
+                        " LEFT JOIN likes AS lk ON f.film_id = lk.film_id" +
+                        " GROUP BY f.film_id " +
+                        " ORDER BY likes DESC ");
         while (filmRows.next()) {
             Film film = Film.builder()
-                    .name(filmRows.getString("name"))
+                    .id(filmRows.getLong("film_id"))
+                    .name(filmRows.getString("film_name"))
                     .description(filmRows.getString("description"))
+                    .duration(Long.parseLong(filmRows.getString("duration")))
                     .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
-                    .genre(Set.of(filmRows.getString("genre").split(",")))
-                    .rating(filmRows.getString("rating"))
-                    .likes(Stream.of(filmRows.getString("likes").split(","))
+                    .genre(checkNoGenre(filmRows.getString("genreFilm")))
+                    .rating(filmRows.getString("name"))
+                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
                             .map(Long::parseLong)
                             .collect(Collectors.toSet()))
                     .build();
@@ -441,20 +455,3 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     }
 }
-//"SELECT f.film_id, " +
-//        "f.film_name, " +
-//        "f.description, " +
-//        "f.releaseDate, " +
-//        "g.genre, " +
-//        "r.rating, " +
-////                            "GROUP_CONCAT(l.name) AS listOfUsersLike " +
-////                            "(SELECT COUNT (user_id) AS popular " +
-////                            "FROM like " +
-////                            "GROUP BY film_id " +
-////                            "ORDER BY popular DESC) AS like " +
-//        "FROM film AS f " +
-//        "LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id " +
-//        "LEFT JOIN genre AS g ON gf.genre_id = g.genre_id " +
-//        "LEFT JOIN rating AS r ON f.rating = r.rating " +
-////                            "LEFT JOIN like AS l ON f.film_id = l.film_id " +
-////        "WHERE f.film_id = ? ";

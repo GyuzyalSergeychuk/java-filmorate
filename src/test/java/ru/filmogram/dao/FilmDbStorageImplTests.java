@@ -191,12 +191,109 @@ class FilmDbStorageImplTests {
 
     @Test
     void sortPopularFilm() throws ValidationException {
-        List<Film> sortFilm = filmStorage.sortPopularFilm(2);
-        assertEquals("Аватар: Путь воды", sortFilm.get(0).getName());
+        Film film = Film.builder()
+                .description("текст хороший111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build();
+        Film baseFilm = filmStorage.createFilm(film);
+        Film film1 = Film.builder()
+                .description("текст хороший222")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "фантастика"))
+                .build();
+        Film baseFilm1 = filmStorage.createFilm(film1);
+        User user = User.builder()
+                .name("Том1")
+                .email("nnjh@come.0")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        User baseUser = userStorage.createUser(user);
+        User user1 = User.builder()
+                .name("Том2")
+                .email("nnjh@come.1")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        User baseUser1 = userStorage.createUser(user1);
+        User user2 = User.builder()
+                .name("Том3")
+                .email("nnjh@come.2")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        User baseUser2 = userStorage.createUser(user2);
+
+        Film film2 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
+        Film film3 = filmStorage.addLikeFilm(baseFilm.getId(), baseUser1.getId());
+        Film film4 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
+
+        List<Film> actualFilms = filmStorage.sortPopularFilm(0);
+
+        assertEquals(baseFilm1.getId(), actualFilms.get(0).getId());
+        assertEquals(baseFilm.getId(), actualFilms.get(1).getId());
+
+        List<Film> actualFilms1 = filmStorage.sortPopularFilm(1);
+        assertEquals(1, actualFilms1.size());
     }
 
     @Test
-    void getAllPopular() {
-        assertEquals(1, 2);
+    void getAllPopular() throws ValidationException {
+        Film film = Film.builder()
+                .description("текст хороший111")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "боевик", "фантастика"))
+                .build();
+        Film baseFilm = filmStorage.createFilm(film);
+        Film film1 = Film.builder()
+                .description("текст хороший222")
+                .duration(200L)
+                .name("Аватар: Путь воды2")
+                .releaseDate(LocalDate.of(2022, 12, 02))
+                .rating("GP")
+                .genre(Set.of("приключение", "фантастика"))
+                .build();
+        Film baseFilm1 = filmStorage.createFilm(film1);
+        User user = User.builder()
+                .name("Том1")
+                .email("nnjh@come.0")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        User baseUser = userStorage.createUser(user);
+        User user1 = User.builder()
+                .name("Том2")
+                .email("nnjh@come.1")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        User baseUser1 = userStorage.createUser(user1);
+        User user2 = User.builder()
+                .name("Том3")
+                .email("nnjh@come.2")
+                .login("oooo")
+                .birthday(LocalDate.of(1997, 07, 05))
+                .build();
+        User baseUser2 = userStorage.createUser(user2);
+
+        Film film2 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
+        Film film3 = filmStorage.addLikeFilm(baseFilm.getId(), baseUser1.getId());
+        Film film4 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
+
+        List<Film> actualFilms = filmStorage.getAllPopular();
+
+        assertEquals(baseFilm1.getId(), actualFilms.get(0).getId());
+        assertEquals(baseFilm.getId(), actualFilms.get(1).getId());
+        assertEquals(2, actualFilms.size());
     }
 }
