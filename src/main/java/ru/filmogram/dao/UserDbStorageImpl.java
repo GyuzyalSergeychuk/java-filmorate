@@ -114,12 +114,12 @@ public class UserDbStorageImpl implements UserStorage {
     @Override
     public User getUserId(Long id) throws ValidationException {
 
-        Integer userId = jdbcTemplate.queryForObject(
+        List<Integer> userId = jdbcTemplate.queryForObject(
                 "SELECT user_id FROM users WHERE user_id = ? ",
-                Integer.class,
+                List.class,
                 id);
 
-        if (userId == null) {
+        if (userId.get(0) == null) {
             log.info("Данный {} пользователь не найден", userId);
             return null;
         }
@@ -131,7 +131,7 @@ public class UserDbStorageImpl implements UserStorage {
                 "              FROM users" +
                 "              WHERE user_id = ?";
         User finalUser = jdbcTemplate.queryForObject(
-                query, new Object[]{userId}, new UserMapper());
+                query, new Object[]{userId.get(0)}, new UserMapper());
             return finalUser;
 }
 
@@ -250,4 +250,5 @@ public class UserDbStorageImpl implements UserStorage {
         }
         return listCommonFriends;
     }
+
 }

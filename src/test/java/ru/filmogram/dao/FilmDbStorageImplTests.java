@@ -50,7 +50,7 @@ class FilmDbStorageImplTests {
         assertEquals(film.getDuration(), createdFilm.getDuration());
         assertEquals(film.getReleaseDate(), createdFilm.getReleaseDate());
         assertEquals(film.getDescription(), createdFilm.getDescription());
-    };
+    }
 
     @Test
     void getFilmId() throws ValidationException {
@@ -101,7 +101,7 @@ class FilmDbStorageImplTests {
 
         assertEquals(expectedFilms, actualFilms);
         assertEquals("GP-666", actualFilms.get(0).getRating());
-        assertEquals(Set.of("приключение","боевик", "фантастика"), actualFilms.get(1).getGenre());
+        assertEquals(Set.of("приключение", "боевик", "фантастика"), actualFilms.get(1).getGenre());
     }
 
     @Test
@@ -286,9 +286,9 @@ class FilmDbStorageImplTests {
                 .build();
         User baseUser2 = userStorage.createUser(user2);
 
-        Film film2 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
-        Film film3 = filmStorage.addLikeFilm(baseFilm.getId(), baseUser1.getId());
-        Film film4 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
+        filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
+        filmStorage.addLikeFilm(baseFilm.getId(), baseUser1.getId());
+        filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
 
         List<Film> actualFilms = filmStorage.getAllPopular();
 
