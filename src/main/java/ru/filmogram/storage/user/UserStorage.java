@@ -15,7 +15,7 @@ public interface UserStorage {
 
     User getUserId(Long id) throws ValidationException;
 
-    User addFriend(Long id, Long friendId);
+    boolean addFriend(Long id, Long friendId);
 
     void deleteFriend(Long id, Long friendId);
 

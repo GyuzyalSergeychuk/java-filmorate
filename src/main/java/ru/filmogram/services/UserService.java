@@ -32,7 +32,7 @@ public class UserService {
         return userStorage.getUserId(id);
     }
 
-    public User addFriends(Long id, Long friendId) {
+    public boolean addFriends(Long id, Long friendId) {
         return userStorage.addFriend(id, friendId);
     }
 

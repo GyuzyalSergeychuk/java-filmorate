@@ -52,13 +52,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User addFriend(Long id, Long friendId) {
+    public boolean addFriend(Long id, Long friendId) {
         User user = users.get(id);
         User friendUser = users.get(friendId);
         user.addFriend(friendId);
         friendUser.addFriend(id);
 
-        return user;
+        return true;
     }
 
     @Override

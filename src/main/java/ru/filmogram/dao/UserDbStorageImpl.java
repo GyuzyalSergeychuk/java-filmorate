@@ -16,8 +16,6 @@ import ru.filmogram.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Repository
 @Primary
@@ -132,50 +130,63 @@ public class UserDbStorageImpl implements UserStorage {
                 "              WHERE user_id = ?";
         User finalUser = jdbcTemplate.queryForObject(
                 query, new Object[]{userId.get(0)}, new UserMapper());
-            return finalUser;
-}
+        return finalUser;
+    }
 
     @Override
-    public User addFriend(Long userid, Long friendId) {
+    public boolean addFriend(Long userId, Long friendId) {
 
-        Integer userId = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM friends WHERE friend_one_id = ? AND friend_two_id = ? ",
+        // проверяем есть ли такая запись
+        Integer checkForFriend1 = jdbcTemplate.queryForObject(
+                "SELECT COUNT(friend_one_id) FROM friends WHERE friend_one_id = ? AND friend_two_id = ? ",
                 Integer.class,
-                userid, friendId);
+                userId, friendId);
 
-        if (userId == 0) {
+        // если есть, значит запрос уже был направлен
+        if (checkForFriend1 > 0) {
+            log.info("Вы уже направили запрос в друзья между пользователями {} и {}", userId, friendId);
+            return false;
+        }
+
+        // проверяем обратную запись, не кидал ли  друг уже заявку в друзья нашему юзеру
+        Integer checkForFriend2 = jdbcTemplate.queryForObject(
+                "SELECT COUNT(friend_two_id) FROM friends WHERE friend_two_id = ? AND friend_one_id = ? ",
+                Integer.class,
+                userId, friendId);
+
+        // условие что второй юзер уже отправил ему заявку в друзья то проверяем ее статус
+        if(checkForFriend2 > 0) {
+            boolean checkStatus = Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                    "SELECT status FROM friends WHERE friend_two_id = ? AND friend_one_id = ? ",
+                    Boolean.class,
+                    userId, friendId));
+            // если статус true то ничего не делаем так как они уже друзья
+            if(checkStatus) {
+                log.info("Пользователи уже друзья: {} и {}", userId, friendId);
+                return false;
+            // а если статут false то меняем статус на true
+            } else {
+                jdbcTemplate.update(
+                        "" +
+                                "UPDATE friends SET " +
+                                "status = ? " +
+                                "WHERE " +
+                                "friend_one_id = ? " +
+                                "AND " +
+                                "friend_two_id = ?",
+                                true, friendId, userId);
+                return true;
+            }
+        }
+        //если везде все чисто и никаких записей нет, мы просто создаем запись (статут по дефолту встанет false)
+        else  {
             jdbcTemplate.update(
                     "INSERT INTO friends(" +
                             "friend_one_id, " +
-                            "friend_two_id, " +
-                            "status) " +
-                            "VALUES (?, ?, true)", userId, friendId);
+                            "friend_two_id) " +
+                            "VALUES (?, ?)", userId, friendId);
+            return true;
         }
-        if (friendId > 0) {
-            SqlRowSet friendRows = jdbcTemplate.queryForRowSet("SELECT u.user_id, " +
-                            "u.name," +
-                            "u.email, " +
-                            "u.login, " +
-                            "u.birthday," + "(SELECT friend_two_id FROM friend WHERE friend_two_id = ?) AS friends" +
-                            "FROM users AS u" +
-                            "LEFT JOIN friend AS f ON u.user_id = f.friend_two_id" +
-                            "WHERE f user_id = ?",
-                    friendId, userId);
-            if (friendRows.next()) {
-                User user = User.builder()
-                        .name(friendRows.getString("name"))
-                        .email(friendRows.getString("email"))
-                        .login(friendRows.getString("login"))
-                        .birthday(LocalDate.parse(Objects.requireNonNull(friendRows.getString("birthday"))))
-                        .id(Long.valueOf(Objects.requireNonNull(friendRows.getString("user_id"))))
-                        .friends(Stream.of(friendRows.getString("friends").split(","))
-                                .map(Long::parseLong)
-                                .collect(Collectors.toSet()))
-                        .build();
-                return user;
-            }
-        }
-        return null;
     }
 
     @Override

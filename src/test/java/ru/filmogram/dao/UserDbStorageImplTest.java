@@ -1,14 +1,13 @@
 package ru.filmogram.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.User;
-import ru.filmogram.storage.film.FilmStorage;
 import ru.filmogram.storage.user.UserStorage;
 
 import java.time.LocalDate;
@@ -19,17 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserDbStorageImplTest {
 
     @Autowired
     UserStorage userStorage;
-    @Autowired
-    FilmStorage filmStorage;
-
-    @AfterEach
-    void init() {
-        filmStorage.deleteAllTables();
-    }
 
     @Test
     void findAllUser() throws ValidationException {
@@ -48,12 +41,11 @@ class UserDbStorageImplTest {
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         userStorage.createUser(user1);
-        List<User> users = userStorage.findAllUser();
+        List<User> actualUsers = userStorage.findAllUser();
 
-        assertEquals(users.get(1), users.get(0).getId());
-        assertEquals("Том4", users.get(0).getName());
-        assertEquals(users.get(2), users.get(1).getId());
-        assertEquals(2 ,users.size());
+        assertEquals(2 , actualUsers.size());
+        assertEquals(user1.getName(), actualUsers.get(1).getName());
+        assertEquals(user.getLogin(), actualUsers.get(0).getLogin());
     }
 
     @Test
@@ -65,7 +57,7 @@ class UserDbStorageImplTest {
                 .birthday(LocalDate.of(1997, 07, 05))
                 .build();
         User actualUser = userStorage.createUser(user);
-        assertEquals("Том4", actualUser.getName());
+        assertEquals(user.getName(), actualUser.getName());
     }
 
     @Test
@@ -77,19 +69,19 @@ class UserDbStorageImplTest {
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         userStorage.createUser(user);
-        User user1 = User.builder()
-                .id(1l)
+        User expectedUser = User.builder()
+                .id(1L)
                 .name("ТомНовый")
                 .email("nnjh@come.новый")
                 .login("новый")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
-        User actualUser = userStorage.updateUser(user1);
+        User actualUser = userStorage.updateUser(expectedUser);
 
         assertEquals(1, actualUser.getId());
-        assertEquals("ТомНовый", actualUser.getName());
-        assertEquals("nnjh@come.новый", actualUser.getEmail());
-        assertEquals("новый", actualUser.getLogin());
+        assertEquals(expectedUser.getName(), actualUser.getName());
+        assertEquals(expectedUser.getEmail(), actualUser.getEmail());
+        assertEquals(expectedUser.getLogin(), actualUser.getLogin());
     }
 
     @Test
@@ -109,45 +101,49 @@ class UserDbStorageImplTest {
                 .build();
         userStorage.createUser(user1);
 
-        assertEquals("Том14", userStorage.getUserId(1l).getName());
-        assertEquals("Том2", userStorage.getUserId(2l).getName());
-        assertEquals("2222222", userStorage.getUserId(2l).getLogin());
+        assertEquals(user.getName(), userStorage.getUserId(1L).getName());
+        assertEquals(user1.getName(), userStorage.getUserId(2L).getName());
+        assertEquals(user1.getLogin(), userStorage.getUserId(2L).getLogin());
     }
 
     @Test
-    void addFriend() {
-        User user1 = User.builder()
-                .id(4L)
-                .name("Том44")
-                .email("nnjh@come.44")
-                .login("oooo")
-                .birthday(LocalDate.of(1997, 07, 05))
-                .status(false)
+    void addFriend() throws ValidationException {
+        User user = User.builder()
+                .name("Том14")
+                .email("nnjh@come.1")
+                .login("11111")
+                .birthday(LocalDate.of(2001, 07, 05))
                 .build();
-
-        User user2 = User.builder()
-                .id(5L)
-                .name("Том45")
-                .email("nnjh@come.5")
-                .login("ooo5")
-                .birthday(LocalDate.of(1995, 07, 05))
-                .status(false)
+        User baseUser = userStorage.createUser(user);
+        User friend1 = User.builder()
+                .name("Том2")
+                .email("nnjh@come.2")
+                .login("2222222")
+                .birthday(LocalDate.of(2001, 07, 05))
                 .build();
+        User baseFriend1 = userStorage.createUser(friend1);
+        User friend2 = User.builder()
+                .name("Том3")
+                .email("nnjh@come.2")
+                .login("223332")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        User baseFriend2 = userStorage.createUser(friend2);
 
-        userStorage.addFriend(user1.getId(), user2.getId());
-
-        assertEquals(user2.getId(), 5);
+        //TODO тут вероятно надо объединить тест с getFriends  делать единые ассерты
+        // а сам метод добавления в друзья я вроде починил
+        assertEquals(2, 3);
     }
-
-    @Test
-    void deleteFriend() {
-    }
-
-    @Test
-    void getFriends() {
-    }
-
-    @Test
-    void getCommonFriends() {
-    }
+//
+//    @Test
+//    void deleteFriend() {
+//    }
+//
+//    @Test
+//    void getFriends() {
+//    }
+//
+//    @Test
+//    void getCommonFriends() {
+//    }
 }
