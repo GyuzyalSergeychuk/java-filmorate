@@ -1,11 +1,11 @@
 package ru.filmogram.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 import ru.filmogram.model.User;
@@ -22,17 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class FilmDbStorageImplTests {
 
     @Autowired
     FilmStorage filmStorage;
     @Autowired
     UserStorage userStorage;
-
-    @AfterEach
-    void init() {
-        filmStorage.deleteAllTables();
-    }
 
     @Test
     void createFilm() throws ValidationException {

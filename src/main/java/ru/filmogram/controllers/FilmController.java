@@ -39,7 +39,6 @@ public class FilmController {
         return filmService.addLike(id, userId);
     }
 
-    //TODO надо возвращать код статус возврата
     @DeleteMapping("{id}/like/{userId}")
     public boolean deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
         filmService.deleteLike(id, userId);
