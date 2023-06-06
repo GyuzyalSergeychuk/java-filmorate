@@ -38,12 +38,6 @@ class FilmControllerTest {
     }
 
     @Test
-    void needToDeliteThisTest() {
-        var a = 1;
-        assertEquals(a, 1);
-    }
-
-    @Test
     void findAll() throws ValidationException {
         filmController.create(film);
         // action
@@ -138,7 +132,6 @@ class FilmControllerTest {
     void updateInvalideDuration() throws ValidationException {
         filmController.create(film);
         Film expectedFilm = Film.builder()
-                .id(1L)
                 .description("После принятия образа аватара солдат Джейк Салли становится предводителем народа на'ви. " +
                         "Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.")
                 .duration(-1L)
@@ -150,7 +143,7 @@ class FilmControllerTest {
         assertThrows(
                 ValidationException.class,
                 () -> filmController.update(expectedFilm),
-                "Проверка исключения на положительную продолжительность фильма");
+                "Проверка исключения на отрицательную продолжительность фильма");
     }
 
     @Test

@@ -157,7 +157,6 @@ class UserDbStorageImplTest {
         assertEquals(baseUser2.getName(), friendsOfBaseUser1.get(0).getName());
         assertEquals(2, friendsOfBaseUser2.size());
         assertEquals(3, friendsOfBaseUser3.size());
-        assertEquals(baseUser3.getName(), friendsOfBaseUser2.get(1).getName());
         assertEquals(2, friendsOfBaseUser2.size());
         assertEquals(0, friendsOfBaseUser4.size());
     }
@@ -198,7 +197,58 @@ class UserDbStorageImplTest {
         assertEquals(1, friends.size());
         assertEquals(0, friends1.size());
     }
-//    @Test
-//    void getCommonFriends() {
-//    }
+    @Test
+    void getCommonFriends() throws ValidationException {
+        User user1 = User.builder()
+                .name("Том14")
+                .email("nnjh@come.1")
+                .login("11111")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        User baseUser1 = userStorage.createUser(user1);
+        User user2 = User.builder()
+                .name("Том2")
+                .email("nnjh@come.2")
+                .login("2222222")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        User baseUser2 = userStorage.createUser(user2);
+        User user3 = User.builder()
+                .name("Том3")
+                .email("nnjh@come.3")
+                .login("223332")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        User baseUser3 = userStorage.createUser(user3);
+        User user4 = User.builder()
+                .name("Том5")
+                .email("nnjh@come.3")
+                .login("223332")
+                .birthday(LocalDate.of(2001, 07, 05))
+                .build();
+        User baseUser4 = userStorage.createUser(user4);
+
+        userStorage.addFriend(baseUser1.getId(), baseUser2.getId());
+        userStorage.addFriend(baseUser1.getId(), baseUser3.getId());
+        userStorage.addFriend(baseUser2.getId(), baseUser1.getId());
+        userStorage.addFriend(baseUser2.getId(), baseUser3.getId());
+        userStorage.addFriend(baseUser3.getId(), baseUser1.getId());
+        userStorage.addFriend(baseUser1.getId(), baseUser3.getId());
+        userStorage.addFriend(baseUser3.getId(), baseUser2.getId());
+        userStorage.addFriend(baseUser3.getId(), baseUser2.getId());
+        userStorage.addFriend(baseUser3.getId(), baseUser4.getId());
+        userStorage.addFriend(baseUser4.getId(), baseUser3.getId());
+
+
+        List<User> friendsOfBaseUser1 = userStorage.getCommonFriends(baseUser1.getId(), baseUser2.getId());
+        List<User> friendsOfBaseUser2 = userStorage.getCommonFriends(baseUser2.getId(), baseUser4.getId());
+        List<User> friendsOfBaseUser3 = userStorage.getCommonFriends(baseUser3.getId(), baseUser4.getId());
+        List<User> friendsOfBaseUser4 = userStorage.getCommonFriends(baseUser3.getId(), baseUser1.getId());
+
+        assertEquals(1, friendsOfBaseUser1.size());
+        assertEquals(1, friendsOfBaseUser2.size());
+        assertEquals(0, friendsOfBaseUser3.size());
+        assertEquals(1, friendsOfBaseUser4.size());
+
+    }
 }

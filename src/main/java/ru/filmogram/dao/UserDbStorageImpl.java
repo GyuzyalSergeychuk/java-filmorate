@@ -204,16 +204,15 @@ public class UserDbStorageImpl implements UserStorage {
             // TODO нужно переделать на возврат листа юзеров через маппер
             SqlRowSet rs = jdbcTemplate.queryForRowSet(
                     "SELECT u.user_id, " +
-                    "u.user_name, " +
-                    "u.email, " +
-                    "u.login, " +
-                    "u.birthday, " +
-                    "FROM users AS u " +
-                    "LEFT JOIN friends AS f ON u.user_id = f.friend_two_id " +
-                    "WHERE f.friend_two_id = ? " +
-                    "AND status = true " +
-                    "OR f.friend_one_id = ?", id, id);
-            while (rs.next()){
+                            "u.user_name, " +
+                            "u.email, " +
+                            "u.login, " +
+                            "u.birthday " +
+                            "FROM users AS u " +
+                            "JOIN friends AS f ON u.user_id = f.friend_two_id " +
+                            "WHERE f.friend_one_id = ?"
+                            , id);
+            while (rs.next()) {
                 User user = User.builder()
                         .id(rs.getLong("user_id"))
                         .name(rs.getString("user_name"))
@@ -222,6 +221,27 @@ public class UserDbStorageImpl implements UserStorage {
                         .birthday(LocalDate.parse(rs.getString("birthday")))
                         .build();
                 users.add(user);
+            }
+
+            SqlRowSet rs1 = jdbcTemplate.queryForRowSet(
+                    "SELECT u.user_id, " +
+                            "u.user_name, " +
+                            "u.email, " +
+                            "u.login, " +
+                            "u.birthday " +
+                            "FROM users AS u " +
+                            "JOIN friends AS f ON u.user_id = f.friend_one_id " +
+                            "WHERE f.friend_two_id = ? AND status = true "
+                    , id);
+            while (rs1.next()) {
+                User user1 = User.builder()
+                        .id(rs1.getLong("user_id"))
+                        .name(rs1.getString("user_name"))
+                        .email(rs1.getString("email"))
+                        .login(rs1.getString("login"))
+                        .birthday(LocalDate.parse(rs1.getString("birthday")))
+                        .build();
+                users.add(user1);
             }
         } else if (id < 0) {
             log.info("id {} пользователя не может быть отрицательным", id);
@@ -233,42 +253,26 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(Long id, Long otherId) {
-        List<User> listCommonFriends = new ArrayList<>();
+        List<User> friendOne = new ArrayList<>();
+        List<User> friendTwo = new ArrayList<>();
+        List<User> commonFriends= new ArrayList<>();
 
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(
-                "SELECT u.user_id, " +
-                        "u.name, " +
-                        "u.email, " +
-                        "u.login, " +
-                        "FROM users AS u " +
-                        "LEFT JOIN friends AS f ON u.user_id = f.friend_wto_id " +
-                        "LEFT JOIN friends AS f ON u.user_id = f.friend_one_id " +
-                        "WHERE f.status = 1 " +
-                        "AND f.friend_one_id = ? " +
-                        "OR f.friend_wto_id = ? " +
-                        "INTERSECT" +
-                        " SELECT u.user_id," +
-                        " u.name," +
-                        " u.email," +
-                        " u.login," +
-                        " FROM users AS u " +
-                        "LEFT JOIN friends AS f ON u.user_id = f.friend_wto_id " +
-                        "LEFT JOIN friends AS f ON u.user_id = f.friend_one_id " +
-                        "WHERE f.status = 1" +
-                        "AND f.friend_one_id = ? " +
-                        "OR f.friend_wto_id = ?", id, otherId);
-
-        while (userRows.next()) {
-            User user = User.builder()
-                    .name(userRows.getString("name"))
-                    .email(userRows.getString("email"))
-                    .login(userRows.getString("login"))
-                    .birthday(LocalDate.parse(Objects.requireNonNull(userRows.getString("birthday"))))
-                    .id(Long.valueOf(Objects.requireNonNull(userRows.getString("user_id"))))
-                    .build();
-            listCommonFriends.add(user);
+        if (id > 0) {
+            friendOne = getFriends(id);
+            }
+        if (otherId > 0) {
+            friendTwo = getFriends(otherId);
         }
-        return listCommonFriends;
+        if ((id == 0 && id < 0) && (otherId == 0 && otherId < 0)) {
+            log.info("Пользователь не существует");
+        }
+
+        for (User user : friendTwo) {
+            if(friendOne.contains(user)){
+                commonFriends.add(user);
+        }
     }
+        return commonFriends;
+}
 
 }

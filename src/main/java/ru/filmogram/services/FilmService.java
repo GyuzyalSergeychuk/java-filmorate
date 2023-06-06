@@ -19,6 +19,9 @@ public class FilmService {
     }
 
     public Film create(Film film) throws ValidationException {
+        if (film.getDuration() < 0){
+            throw new ValidationException("Значение не может быть отрицательным");
+        }
         return filmStorage.createFilm(film);
     }
 
