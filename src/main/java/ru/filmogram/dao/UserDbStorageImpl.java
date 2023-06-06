@@ -154,17 +154,17 @@ public class UserDbStorageImpl implements UserStorage {
                 Integer.class,
                 userId, friendId);
 
-        // условие что второй юзер уже отправил ему заявку в друзья то проверяем ее статус
-        if(checkForFriend2 > 0) {
+        // условие, что второй юзер уже отправил ему заявку в друзья то проверяем ее статус
+        if (checkForFriend2 > 0) {
             boolean checkStatus = Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                     "SELECT status FROM friends WHERE friend_two_id = ? AND friend_one_id = ? ",
                     Boolean.class,
                     userId, friendId));
-            // если статус true то ничего не делаем так как они уже друзья
-            if(checkStatus) {
+            // если статус true, то ничего не делаем так как они уже друзья
+            if (checkStatus) {
                 log.info("Пользователи уже друзья: {} и {}", userId, friendId);
                 return false;
-            // а если статут false то меняем статус на true
+                // а если статут false то меняем статус на true
             } else {
                 jdbcTemplate.update(
                         "" +
@@ -174,12 +174,12 @@ public class UserDbStorageImpl implements UserStorage {
                                 "friend_one_id = ? " +
                                 "AND " +
                                 "friend_two_id = ?",
-                                true, friendId, userId);
+                        true, friendId, userId);
                 return true;
             }
         }
         //если везде все чисто и никаких записей нет, мы просто создаем запись (статут по дефолту встанет false)
-        else  {
+        else {
             jdbcTemplate.update(
                     "INSERT INTO friends(" +
                             "friend_one_id, " +
@@ -191,33 +191,42 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
-        jdbcTemplate.queryForRowSet("delete from friends where friend_one_id = ?,AND friend_two_id = ?", userId, friendId);
+        jdbcTemplate.update("delete from friends where friend_one_id = ? AND friend_two_id = ?", userId, friendId);
+        jdbcTemplate.update("delete from friends where friend_two_id = ? AND friend_one_id = ? AND status = true", userId, friendId);
     }
 
     @Override
     public List<User> getFriends(Long id) {
+
         ArrayList<User> users = new ArrayList<>();
 
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(
-                "SELECT u.user_id," +
-                        " u.name, " +
-                        "u.email, " +
-                        "u.login, " +
-                        "f.status " +
-                        "FROM users AS u " +
-                        "LEFT JOIN friends AS f ON u.user_id = f.friend_wto_id " +
-                        "LEFT JOIN friends AS f ON u.user_id = f.friend_one_id " +
-                        "WHERE f.friend_one_id = ? " +
-                        "OR f.friend_wto_id = ?", id);
-        while (userRows.next()) {
-            User user = User.builder()
-                    .name(userRows.getString("name"))
-                    .email(userRows.getString("email"))
-                    .login(userRows.getString("login"))
-                    .birthday(LocalDate.parse(Objects.requireNonNull(userRows.getString("birthday"))))
-                    .id(Long.valueOf(Objects.requireNonNull(userRows.getString("user_id"))))
-                    .build();
-            users.add(user);
+        if (id != null) {
+            // TODO нужно переделать на возврат листа юзеров через маппер
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(
+                    "SELECT u.user_id, " +
+                    "u.user_name, " +
+                    "u.email, " +
+                    "u.login, " +
+                    "u.birthday, " +
+                    "FROM users AS u " +
+                    "LEFT JOIN friends AS f ON u.user_id = f.friend_two_id " +
+                    "WHERE f.friend_two_id = ? " +
+                    "AND status = true " +
+                    "OR f.friend_one_id = ?", id, id);
+            while (rs.next()){
+                User user = User.builder()
+                        .id(rs.getLong("user_id"))
+                        .name(rs.getString("user_name"))
+                        .email(rs.getString("email"))
+                        .login(rs.getString("login"))
+                        .birthday(LocalDate.parse(rs.getString("birthday")))
+                        .build();
+                users.add(user);
+            }
+        } else if (id < 0) {
+            log.info("id {} пользователя не может быть отрицательным", id);
+        } else {
+            log.info("Пользователя {} не существует", id);
         }
         return users;
     }
