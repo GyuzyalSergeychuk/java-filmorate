@@ -15,6 +15,7 @@
     <description>Spring Web</description>
     <properties>
         <java.version>11</java.version>
+        <spring-boot.run.jvmArguments>-Dfile.encoding=UTF-8</spring-boot.run.jvmArguments>
     </properties>
     <dependencies>
 
@@ -60,6 +61,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <argLine>-Dconsole.encoding=UTF-8</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>

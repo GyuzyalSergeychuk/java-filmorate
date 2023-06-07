@@ -71,6 +71,8 @@ public class FilmDbStorageImpl implements FilmStorage {
                 jdbcTemplate.update(queryGenre, genre);
             }
         }
+
+
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film")
                 .usingGeneratedKeyColumns("film_id");
