@@ -30,13 +30,13 @@ public class GenreDbStorageImpl implements GenreStorage {
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(
                 "SELECT genre_id, " +
-                        "name " +
+                        "genre_name " +
                         "FROM genre " +
                         " WHERE genre_id = ?", id);
         if (genreRows.next()) {
             genre = Genre.builder()
                     .id(genreRows.getLong("genre_id"))
-                    .name(genreRows.getString("name"))
+                    .name(genreRows.getString("genre_name"))
                     .build();
         }
         return genre;
@@ -48,12 +48,12 @@ public class GenreDbStorageImpl implements GenreStorage {
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(
                 "SELECT genre_id, " +
-                        "name " +
+                        "genre_name " +
                         "FROM genre ");
         while (genreRows.next()) {
             Genre genre = Genre.builder()
                     .id(genreRows.getLong("genre_id"))
-                    .name(genreRows.getString("name"))
+                    .name(genreRows.getString("genre_name"))
                     .build();
             genres.add(genre);
         }

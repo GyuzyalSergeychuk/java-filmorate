@@ -31,13 +31,13 @@ public class MpaDbStorageImpl implements MpaStorage {
 
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(
                 "SELECT rating_id, " +
-                        "name " +
+                        "rating_name " +
                         "FROM rating " +
                         "WHERE rating_id = ?", id);
         if (mpaRows.next()) {
             mpa = Mpa.builder()
                     .id(mpaRows.getLong("rating_id"))
-                    .name(mpaRows.getString("name"))
+                    .name(mpaRows.getString("rating_name"))
                     .build();
         }
         return mpa;
@@ -49,12 +49,12 @@ public class MpaDbStorageImpl implements MpaStorage {
 
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(
                 "SELECT rating_id, " +
-                        "name " +
+                        "rating_name " +
                         "FROM rating ");
         while (mpaRows.next()) {
             Mpa mpa = Mpa.builder()
                     .id(mpaRows.getLong("rating_id"))
-                    .name(mpaRows.getString("name"))
+                    .name(mpaRows.getString("rating_name"))
                     .build();
             mpas.add(mpa);
         }

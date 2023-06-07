@@ -2,6 +2,7 @@ package ru.filmogram.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
 import ru.filmogram.model.Film;
+import ru.filmogram.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,11 +23,14 @@ public class FilmMapperLikes implements RowMapper<Film> {
                 .description(rs.getString("description"))
                 .duration(rs.getLong("duration"))
                 .releaseDate(LocalDate.parse(rs.getString("releaseDate")))
-                .rating(rs.getString("name"))
-                .genre(checkNoGenre(rs.getString("genreFilm")))
+                .rating(Mpa.builder()
+                        .id(rs.getLong("rating_id"))
+                        .build())
+                .genres(checkNoGenre(rs.getString("genreFilm")))
                 .likes(Stream.of(rs.getString("listOfUsersLike").split(","))
                         .map(Long::parseLong)
                         .collect(Collectors.toSet()))
+                .rate(rs.getInt("rate"))
                 .build();
     }
 }

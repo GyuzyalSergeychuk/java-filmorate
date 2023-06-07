@@ -1,16 +1,16 @@
 package ru.filmogram.util;
 
-import java.util.HashSet;
+import ru.filmogram.model.Genre;
+
 import java.util.List;
-import java.util.Set;
 
 public class Util {
 
-    public static Set<String> checkNoGenre(String genreFilm) {
+    public static List<Genre> checkNoGenre(String genreFilm) {
         if (genreFilm == null) {
-            return Set.of();
+            return List.of();
         }
-        Set<String> unicalGenres = new HashSet<String>(List.of(genreFilm.split(",")));
-        return unicalGenres;
+//        List<Genre> unicalGenres = new HashSet<String>(List.of(genreFilm.split(",")));
+        return null;
     }
 }

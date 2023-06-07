@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static ru.filmogram.util.Util.checkNoGenre;
-
 public class FilmMapper implements RowMapper<Film> {
 
     @Override
@@ -21,11 +19,15 @@ public class FilmMapper implements RowMapper<Film> {
                 .description(rs.getString("description"))
                 .duration(rs.getLong("duration"))
                 .releaseDate(LocalDate.parse(rs.getString("releaseDate")))
-                .rating(rs.getString("name"))
-                .genre(checkNoGenre(rs.getString("genreFilm")))
+//                .rating(Mpa.builder()
+//                        .id(rs.getLong("rating_id"))
+//                        .name(rs.getString("rating_name"))
+//                        .build())
+//                .genres(checkNoGenre(rs.getString("genreFilm")))
 //                .likes(Stream.of(rs.getString("likes").split(","))
 //                        .map(Long::parseLong)
 //                        .collect(Collectors.toSet()))
+//                .rate(rs.getInt("rate"))
                 .build();
     }
 

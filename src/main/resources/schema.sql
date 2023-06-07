@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS genre (
     genre_id INTEGER PRIMARY KEY,
-    name VARCHAR(64) NOT NULL
+    genre_name VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS rating (
     rating_id INTEGER PRIMARY KEY,
-    name VARCHAR(64) NOT NULL
+    rating_name VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS film (

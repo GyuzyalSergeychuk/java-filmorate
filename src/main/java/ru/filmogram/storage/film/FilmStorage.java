@@ -22,6 +22,4 @@ public interface FilmStorage {
     List<Film> getAllPopular();
 
     Film getFilmId(Long id);
-
-    void deleteAllTables();
 }

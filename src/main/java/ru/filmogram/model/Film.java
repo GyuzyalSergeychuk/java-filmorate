@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,8 +17,9 @@ public class Film implements Comparable<Film> {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private Set<String> genre;
-    private String rating;
+    private List<Genre> genres;
+    private Mpa rating;
+    private Integer rate;
     // продолжительность фильма в минутах
     private long duration;
     private Set<Long> likes;
@@ -56,8 +58,9 @@ public class Film implements Comparable<Film> {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
-                ", genre=" + genre +
-                ", rating='" + rating + '\'' +
+                ", genres=" + genres +
+                ", rating=" + rating +
+                ", rate=" + rate +
                 ", duration=" + duration +
                 ", likes=" + likes +
                 '}';
@@ -68,11 +71,11 @@ public class Film implements Comparable<Film> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Film film = (Film) o;
-        return duration == film.duration && Objects.equals(id, film.id) && Objects.equals(name, film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(genre, film.genre) && Objects.equals(rating, film.rating) && Objects.equals(likes, film.likes);
+        return duration == film.duration && Objects.equals(id, film.id) && Objects.equals(name, film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(genres, film.genres) && Objects.equals(rating, film.rating) && Objects.equals(rate, film.rate) && Objects.equals(likes, film.likes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, releaseDate, genre, rating, duration, likes);
+        return Objects.hash(id, name, description, releaseDate, genres, rating, rate, duration, likes);
     }
 }
