@@ -1,6 +1,7 @@
 package ru.filmogram.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
+import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.model.User;
 
 import java.sql.ResultSet;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 public class UserMapper implements RowMapper<User> {
 
     @Override
-    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public User mapRow(ResultSet rs, int rowNum) throws ObjectNotFoundException, SQLException {
 
         return User.builder()
                 .id(rs.getLong("user_id"))

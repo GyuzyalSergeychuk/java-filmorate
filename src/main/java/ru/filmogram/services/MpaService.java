@@ -1,6 +1,7 @@
 package ru.filmogram.services;
 
 import org.springframework.stereotype.Service;
+import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Mpa;
 import ru.filmogram.storage.film.MpaStorage;
 
@@ -15,7 +16,10 @@ public class MpaService {
         return mpaStorage.findAllMpa();
     }
 
-    public Mpa getId(Long id) {
+    public Mpa getId(Long id) throws ValidationException {
+        if (id < 0 && id == null){
+            throw new ValidationException(String.format("id {} не может быть отрицательным", id));
+        }
         return mpaStorage.getMpaId(id);
     }
 }

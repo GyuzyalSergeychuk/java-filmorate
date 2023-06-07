@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.filmogram.exceptions.ValidationException;
+import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.mapper.UserMapper;
 import ru.filmogram.model.User;
 import ru.filmogram.storage.user.UserStorage;
@@ -55,7 +55,7 @@ public class UserDbStorageImpl implements UserStorage {
     }
 
     @Override
-    public User createUser(User user) throws ValidationException {
+    public User createUser(User user) {
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
@@ -83,43 +83,42 @@ public class UserDbStorageImpl implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) throws ValidationException {
+    public User updateUser(User user) throws ObjectNotFoundException {
 
-        Integer userId = jdbcTemplate.queryForRowSet(
+        List<Integer> userId = jdbcTemplate.queryForList(
                 "SELECT user_id FROM users WHERE user_id = ? ",
-                user.getId()).getRow();
+                Integer.class, user.getId());
 
-        if (userId == 0) {
+        if (userId.size() == 0) {
             log.info("Пользователь {} не существует", userId);
-            return user;
-        } else if (userId > 0) {
+            throw new ObjectNotFoundException("{} пользователь не найден");
+        } else if (userId.get(0) > 0) {
             jdbcTemplate.update(
-                    "UPDATE user SET " +
-                            "name = ?, " +
+                    "UPDATE users SET " +
+                            "user_name = ?, " +
                             "email = ?, " +
                             "login = ?, " +
                             "birthday = ? " +
-                            "WHERE id = ?",
+                            "WHERE user_id = ?",
                     user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
             return user;
-        } else if (userId < 0) {
-            log.info("Невкрно указан {} id пользователя", userId);
+        } else if (userId.get(0) < 0) {
+            log.info("Неверно указан {} id пользователя", userId.get(0));
             return null;
         }
         return user;
     }
 
     @Override
-    public User getUserId(Long id) throws ValidationException {
+    public User getUserId(Long id) throws ObjectNotFoundException {
 
-        List<Integer> userId = jdbcTemplate.queryForObject(
+        List<Integer> userId = jdbcTemplate.queryForList(
                 "SELECT user_id FROM users WHERE user_id = ? ",
-                List.class,
-                id);
+                Integer.class, id);
 
-        if (userId.get(0) == null) {
+        if (userId.size() == 0) {
             log.info("Данный {} пользователь не найден", userId);
-            return null;
+            throw new ObjectNotFoundException("id пользователя {} не существует");
         }
         String query = "SELECT user_id," +
                 "              user_name," +
@@ -148,7 +147,7 @@ public class UserDbStorageImpl implements UserStorage {
             return false;
         }
 
-        // проверяем обратную запись, не кидал ли  друг уже заявку в друзья нашему юзеру
+        // проверяем обратную запись, не кидал ли друг уже заявку в друзья нашему юзеру
         Integer checkForFriend2 = jdbcTemplate.queryForObject(
                 "SELECT COUNT(friend_two_id) FROM friends WHERE friend_two_id = ? AND friend_one_id = ? ",
                 Integer.class,
@@ -200,8 +199,11 @@ public class UserDbStorageImpl implements UserStorage {
 
         ArrayList<User> users = new ArrayList<>();
 
-        if (id != null) {
-            // TODO нужно переделать на возврат листа юзеров через маппер
+        List<Integer> userId = jdbcTemplate.queryForList(
+                "SELECT user_id FROM users WHERE user_id = ? ",
+                Integer.class, id);
+
+        if (userId.get(0) != null) {
             SqlRowSet rs = jdbcTemplate.queryForRowSet(
                     "SELECT u.user_id, " +
                             "u.user_name, " +
@@ -211,7 +213,7 @@ public class UserDbStorageImpl implements UserStorage {
                             "FROM users AS u " +
                             "JOIN friends AS f ON u.user_id = f.friend_two_id " +
                             "WHERE f.friend_one_id = ?"
-                            , id);
+                            , userId.get(0));
             while (rs.next()) {
                 User user = User.builder()
                         .id(rs.getLong("user_id"))
@@ -232,7 +234,7 @@ public class UserDbStorageImpl implements UserStorage {
                             "FROM users AS u " +
                             "JOIN friends AS f ON u.user_id = f.friend_one_id " +
                             "WHERE f.friend_two_id = ? AND status = true "
-                    , id);
+                    , userId.get(0));
             while (rs1.next()) {
                 User user1 = User.builder()
                         .id(rs1.getLong("user_id"))
@@ -243,7 +245,7 @@ public class UserDbStorageImpl implements UserStorage {
                         .build();
                 users.add(user1);
             }
-        } else if (id < 0) {
+        } else if (userId.get(0) < 0) {
             log.info("id {} пользователя не может быть отрицательным", id);
         } else {
             log.info("Пользователя {} не существует", id);

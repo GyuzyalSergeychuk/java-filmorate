@@ -40,7 +40,8 @@ public class FilmController {
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public boolean deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
+    public boolean deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId)
+            throws ValidationException {
         filmService.deleteLike(id, userId);
         return true;
     }
@@ -56,7 +57,7 @@ public class FilmController {
     }
 
     @GetMapping("{id}")
-    public Film getFilm(@PathVariable("id") Long id) {
+    public Film getFilm(@PathVariable("id") Long id) throws ValidationException {
         return filmService.getIdFilm(id);
     }
 }
