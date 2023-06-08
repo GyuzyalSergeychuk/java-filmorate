@@ -19,15 +19,7 @@ public class FilmMapper implements RowMapper<Film> {
                 .description(rs.getString("description"))
                 .duration(rs.getLong("duration"))
                 .releaseDate(LocalDate.parse(rs.getString("releaseDate")))
-//                .rating(Mpa.builder()
-//                        .id(rs.getLong("rating_id"))
-//                        .name(rs.getString("rating_name"))
-//                        .build())
-//                .genres(checkNoGenre(rs.getString("genreFilm")))
-//                .likes(Stream.of(rs.getString("likes").split(","))
-//                        .map(Long::parseLong)
-//                        .collect(Collectors.toSet()))
-//                .rate(rs.getInt("rate"))
+                .rate(rs.getInt("rate"))
                 .build();
     }
 

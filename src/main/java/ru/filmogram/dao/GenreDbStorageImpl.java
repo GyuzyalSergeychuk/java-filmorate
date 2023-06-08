@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.model.Genre;
 import ru.filmogram.storage.film.GenreStorage;
 
@@ -29,17 +30,19 @@ public class GenreDbStorageImpl implements GenreStorage {
         Genre genre = null;
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(
-                "SELECT genre_id, " +
-                        "genre_name " +
-                        "FROM genre " +
-                        " WHERE genre_id = ?", id);
-        if (genreRows.next()) {
-            genre = Genre.builder()
-                    .id(genreRows.getLong("genre_id"))
-                    .name(genreRows.getString("genre_name"))
-                    .build();
+                    "SELECT genre_id, " +
+                            "genre_name " +
+                            "FROM genre " +
+                            "WHERE genre_id = ?", id);
+            if (genreRows.next()) {
+                genre = Genre.builder()
+                        .id(genreRows.getLong("genre_id"))
+                        .name(genreRows.getString("genre_name"))
+                        .build();
+                return genre;
+            } else {
+            throw new ObjectNotFoundException("Жанр не найден");
         }
-        return genre;
     }
 
     @Override

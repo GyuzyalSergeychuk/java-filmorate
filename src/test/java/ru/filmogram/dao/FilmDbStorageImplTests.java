@@ -57,26 +57,36 @@ class FilmDbStorageImplTests {
 
     @Test
     void getFilmId() throws ValidationException {
-//        Film film = Film.builder()
-//                .description("текст хороший")
-//                .duration(192L)
-//                .name("Аватар: Путь воды")
-//                .releaseDate(LocalDate.of(2022, 12, 06))
-//                .rating("GP-666")
-//                .genre(Set.of("приключение", "боевик"))
-//                .build();
-//        Film expectedFilm1 = filmStorage.createFilm(film);
-//        Film film2 = Film.builder()
-//                .description("текст хороший1111")
-//                .duration(200L)
-//                .name("Аватар: Путь воды2")
-//                .releaseDate(LocalDate.of(2022, 12, 02))
-//                .rating("GP")
-//                .genre(Set.of("приключение", "боевик", "фантастика"))
-//                .build();
-//        Film expectedFilm2 = filmStorage.createFilm(film2);
-//        assertEquals(expectedFilm1, filmStorage.getFilmId(expectedFilm1.getId()));
-//        assertEquals(expectedFilm2, filmStorage.getFilmId(expectedFilm2.getId()));
+        Film film = Film.builder()
+                .description("текст хороший")
+                .duration(192L)
+                .name("Аватар: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating(Mpa.builder()
+                        .id(1L)
+                        .build())
+                .genres(List.of(Genre.builder()
+                        .id(1L)
+                        .build()))
+                .rate(1)
+                .build();
+        Film createdFilm = filmStorage.createFilm(film);
+        Film film1 = Film.builder()
+                .description("dnjjhjq")
+                .duration(192L)
+                .name("Аватар111: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating(Mpa.builder()
+                        .id(2L)
+                        .build())
+                .genres(List.of(Genre.builder()
+                        .id(2L)
+                        .build()))
+                .rate(1)
+                .build();
+        Film createdFilm1 = filmStorage.createFilm(film1);
+        assertEquals(createdFilm, filmStorage.getFilmId(createdFilm.getId()));
+        assertEquals(createdFilm1, filmStorage.getFilmId(createdFilm1.getId()));
     }
 
     @Test
@@ -109,31 +119,42 @@ class FilmDbStorageImplTests {
 
     @Test
     void updateFilm() throws ValidationException {
-//        Film baseFilm = Film.builder()
-//                .description("текст хороший1111")
-//                .duration(200L)
-//                .name("Аватар: Путь воды2")
-//                .releaseDate(LocalDate.of(2022, 12, 02))
-//                .rating("GP")
-//                .genre(Set.of("приключение", "боевик", "фантастика"))
-//                .build();
-//        Film baseFilmWithId = filmStorage.createFilm(baseFilm);
-//        Film baseFilmWithUpdate = Film.builder()
-//                .id(baseFilmWithId.getId())
-//                .description("новый")
-//                .duration(196L)
-//                .name("Аватар: ПутьНОВЫЙ")
-//                .releaseDate(LocalDate.of(2022, 12, 02))
-//                .rating("R")
-//                .genre(Set.of("приключение", "фантастика"))
-//                .build();
-//
-//        Film actualFilm = filmStorage.updateFilm(baseFilmWithUpdate);
-//
-//        assertEquals(baseFilmWithUpdate.getId(), actualFilm.getId());
-//        assertEquals(baseFilmWithUpdate.getGenre(), actualFilm.getGenre());
-//        assertEquals(baseFilmWithUpdate.getRating(), actualFilm.getRating());
-//        assertEquals(baseFilmWithUpdate.getDuration(), actualFilm.getDuration());
+        Film film = Film.builder()
+                .description("текст хороший")
+                .duration(192L)
+                .name("Аватар: Путь воды")
+                .releaseDate(LocalDate.of(2022, 12, 06))
+                .rating(Mpa.builder()
+                        .id(1L)
+                        .build())
+                .genres(List.of(Genre.builder()
+                        .id(1L)
+                        .build()))
+                .rate(1)
+                .build();
+        Film baseFilmWithId = filmStorage.createFilm(film);
+        Film expectedFilm = Film.builder()
+                .id(1L)
+                .description("НОВЫЙ")
+                .duration(500L)
+                .name("НОВЫЙ АВАТАР")
+                .releaseDate(LocalDate.of(2023, 01, 06))
+                .rating(Mpa.builder()
+                        .id(3L)
+                        .build())
+                .genres(List.of(Genre.builder()
+                        .id(4L)
+                        .build()))
+                .rate(3)
+                .build();
+
+        Film actualFilm = filmStorage.updateFilm(expectedFilm);
+
+        assertEquals(expectedFilm.getId(), actualFilm.getId());
+        assertEquals("Триллер", actualFilm.getGenres().get(0).getName());
+        assertEquals("PG-13", actualFilm.getRating().getName());
+        assertEquals(expectedFilm.getDuration(), actualFilm.getDuration());
+        assertEquals(expectedFilm.getRate(), actualFilm.getRate());
     }
 
     @Test
