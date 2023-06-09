@@ -197,6 +197,7 @@ class UserDbStorageImplTest {
         assertEquals(1, friends.size());
         assertEquals(0, friends1.size());
     }
+
     @Test
     void getCommonFriends() throws ValidationException {
         User user1 = User.builder()

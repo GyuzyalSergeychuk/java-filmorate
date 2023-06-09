@@ -11,7 +11,6 @@ public class Util {
         if (genreFilm == null) {
             return List.of();
         }
-//        List<Genre> unicalGenres = new HashSet<String>(List.of(genreFilm.split(",")));
         return null;
     }
 

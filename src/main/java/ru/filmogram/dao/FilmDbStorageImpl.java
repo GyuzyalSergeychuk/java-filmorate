@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.mapper.FilmMapper;
-import ru.filmogram.mapper.FilmMapperLikes;
 import ru.filmogram.model.Film;
 import ru.filmogram.model.Genre;
 import ru.filmogram.model.Mpa;
@@ -23,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.filmogram.util.Util.makeMpa;
 
@@ -98,19 +99,19 @@ public class FilmDbStorageImpl implements FilmStorage {
         try {
             SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
                     "          SELECT f.film_id," +
-                    "              f.film_name," +
-                    "              f.description," +
-                    "              f.releaseDate," +
-                    "              f.duration," +
-                    "              f.rate," +
-                    "              r.rating_name," +
-                    "              r.rating_id," +
-                    "              r.rating_name," +
-                    "              FROM film AS f" +
-                    "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-                    "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-                    "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-                    "              WHERE f.film_id = ?", id);
+                            "              f.film_name," +
+                            "              f.description," +
+                            "              f.releaseDate," +
+                            "              f.duration," +
+                            "              f.rate," +
+                            "              r.rating_name," +
+                            "              r.rating_id," +
+                            "              r.rating_name," +
+                            "              FROM film AS f" +
+                            "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                            "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                            "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                            "              WHERE f.film_id = ?", id);
             if (filmRows.next()) {
                 finalFilm = Film.builder()
                         .id(filmRows.getLong("film_id"))
@@ -119,7 +120,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                         .duration(Long.parseLong(filmRows.getString("duration")))
                         .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                         .rate(filmRows.getInt("rate"))
-                        .rating(makeMpa(filmRows.getLong("rating_id"),  filmRows.getString("rating_name")))
+                        .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                         .build();
             }
 
@@ -144,36 +145,51 @@ public class FilmDbStorageImpl implements FilmStorage {
     public List<Film> findAllFilm() {
         ArrayList<Film> films = new ArrayList<>();
 
-//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
-//                "SELECT f.film_id," +
-//                        "f.film_name, " +
-//                        "f.description," +
-//                        "f.releaseDate," +
-//                        "f.duration," +
-//                        "GROUP_CONCAT(g.name) AS genreFilm," +
-//                        "r.name, " +
-//                        "GROUP_CONCAT(l.user_id) AS listOfUsersLike " +
-//                        "FROM film AS f " +
-//                        " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-//                        " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-//                        " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-//                        " LEFT JOIN likes AS l ON f.film_id = l.film_id" +
-//                        " GROUP BY f.film_name" +
-//                        " ORDER BY f.film_id ASC");
-//        while (filmRows.next()) {
-//            Film film = Film.builder()
-//                    .id(filmRows.getLong("film_id"))
-//                    .name(filmRows.getString("film_name"))
-//                    .description(filmRows.getString("description"))
-//                    .duration(Long.parseLong(filmRows.getString("duration")))
-//                    .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
-//                    .genres(checkNoGenre(filmRows.getString("genreFilm")))
-//                    .rating(filmRows.getString("name"))
-//                    .build();
-//            films.add(film);
-//        }
-//        return films;
-        return null;
+        Film finalFilm = null;
+        try {
+            SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
+                    "          SELECT f.film_id," +
+                            "              f.film_name," +
+                            "              f.description," +
+                            "              f.releaseDate," +
+                            "              f.duration," +
+                            "              f.rate," +
+                            "              r.rating_name," +
+                            "              r.rating_id," +
+                            "              r.rating_name," +
+                            "              FROM film AS f" +
+                            "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                            "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                            "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                            "              GROUP BY f.film_name" +
+                            "              ORDER BY f.film_id ASC");
+            while (filmRows.next()) {
+                finalFilm = Film.builder()
+                        .id(filmRows.getLong("film_id"))
+                        .name(filmRows.getString("film_name"))
+                        .description(filmRows.getString("description"))
+                        .duration(Long.parseLong(filmRows.getString("duration")))
+                        .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
+                        .rate(filmRows.getInt("rate"))
+                        .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                        .build();
+
+                List<Long> genresId = jdbcTemplate.queryForList(
+                        "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, finalFilm.getId());
+
+                List<Genre> genres = new ArrayList<>();
+                if (genresId.get(0) != null) {
+                    for (Long genreId : genresId) {
+                        genres.add(genreDbStorage.getGenreId(genreId));
+                    }
+                }
+                finalFilm.setGenres(genres);
+                films.add(finalFilm);
+            }
+        } catch (DataAccessException e) {
+            throw new ObjectNotFoundException("Фильм {} не найден");
+        }
+        return films;
     }
 
     @Override
@@ -184,7 +200,7 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         if (filmId.size() == 0) {
             log.info("Фильм не найден");
-            throw new  ObjectNotFoundException("Фильм не найден");
+            throw new ObjectNotFoundException("Фильм не найден");
         }
 
         ArrayList<Genre> genresOldList = new ArrayList<>();
@@ -199,22 +215,22 @@ public class FilmDbStorageImpl implements FilmStorage {
                 }
             }
 
-        for (Genre genre : film.getGenres()) {
-            if (!genresOldList.contains(genre)) {
-                jdbcTemplate.update("INSERT INTO genre_film (film_id, genre_id) VALUES (?, ?)",
-                        film.getId(), genre.getId());
+            for (Genre genre : film.getGenres()) {
+                if (!genresOldList.contains(genre)) {
+                    jdbcTemplate.update("INSERT INTO genre_film (film_id, genre_id) VALUES (?, ?)",
+                            film.getId(), genre.getId());
 
+                }
+                genreFinal.add(genreDbStorage.getGenreId(genre.getId()));
             }
-            genreFinal.add(genreDbStorage.getGenreId(genre.getId()));
-        }
 
-        for (Genre oldGenre : genresOldList) {
-            if (!genreFinal.contains(oldGenre)) {
-                jdbcTemplate.update(
-                        "delete from genre_film where film_id = ? AND genre_id = ?",
-                        film.getId(), oldGenre.getId());
+            for (Genre oldGenre : genresOldList) {
+                if (!genreFinal.contains(oldGenre)) {
+                    jdbcTemplate.update(
+                            "delete from genre_film where film_id = ? AND genre_id = ?",
+                            film.getId(), oldGenre.getId());
+                }
             }
-        }
         }
 
         Mpa mpa = mpaDbStorage.getMpaId(film.getRating().getId());
@@ -258,7 +274,7 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     @Override
     public Film addLikeFilm(Long filmId, Long userId) throws ValidationException {
-
+        Film finalFilm = null;
         try {
             Integer existingRecordCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
@@ -266,24 +282,50 @@ public class FilmDbStorageImpl implements FilmStorage {
                     filmId, userId);
             if (existingRecordCount != null && existingRecordCount > 0) {
                 log.info("Like фильма {} пользователем {} уже ранее был осуществлен", filmId, userId);
-                String query =
-                                " SELECT f.film_id," +
-                                " f.film_name," +
-                                " f.description," +
-                                " f.releaseDate," +
-                                " f.duration," +
-                                " GROUP_CONCAT(g.name) AS genreFilm," +
-                                " r.name," +
-                                " GROUP_CONCAT(u.user_id) AS listOfUsersLike" +
-                                " FROM film AS f" +
-                                " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-                                " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-                                " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-                                " LEFT JOIN likes AS l ON f.film_id = l.film_id" +
-                                " LEFT JOIN users AS u ON l.user_id = u.user_id" +
-                                " WHERE f.film_id = ?";
-                Film finalFilm = jdbcTemplate.queryForObject(
-                        query, new Object[]{filmId}, new FilmMapperLikes());
+                SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
+                        "          SELECT f.film_id," +
+                                "              f.film_name," +
+                                "              f.description," +
+                                "              f.releaseDate," +
+                                "              f.duration," +
+                                "              f.rate," +
+                                "              r.rating_name," +
+                                "              r.rating_id," +
+                                "              r.rating_name," +
+                                "              GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
+                                "              COUNT(lk.user_id) AS likes " +
+                                "              FROM film AS f" +
+                                "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                                "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                                "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                                "              LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                                "              LEFT JOIN likes AS lk ON f.film_id = lk.film_id " +
+                                "              WHERE f.film_id = ?", filmId);
+                if (filmRows.next()) {
+                    finalFilm = Film.builder()
+                            .id(filmRows.getLong("film_id"))
+                            .name(filmRows.getString("film_name"))
+                            .description(filmRows.getString("description"))
+                            .duration(Long.parseLong(filmRows.getString("duration")))
+                            .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
+                            .rate(filmRows.getInt("rate"))
+                            .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                            .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
+                                    .map(Long::parseLong)
+                                    .collect(Collectors.toSet()))
+                            .build();
+                }
+
+                List<Long> genresId = jdbcTemplate.queryForList(
+                        "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, filmId);
+
+                List<Genre> genres = new ArrayList<>();
+                if (genresId.get(0) != null) {
+                    for (Long genreId : genresId) {
+                        genres.add(genreDbStorage.getGenreId(genreId));
+                    }
+                }
+                finalFilm.setGenres(genres);
                 return finalFilm;
             }
 
@@ -291,28 +333,55 @@ public class FilmDbStorageImpl implements FilmStorage {
                     "INSERT INTO likes (film_id, user_id) VALUES (?, ?)",
                     filmId, userId);
 
-                String query =
-                        "  SELECT f.film_id," +
-                                " f.film_name," +
-                                " f.description," +
-                                " f.releaseDate," +
-                                " f.duration," +
-                                " GROUP_CONCAT(g.name) AS genreFilm," +
-                                " r.name," +
-                                " GROUP_CONCAT(u.user_id) AS listOfUsersLike" +
-                                " FROM film AS f" +
-                                " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-                                " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-                                " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-                                " LEFT JOIN likes AS l ON f.film_id = l.film_id" +
-                                " LEFT JOIN users AS u ON l.user_id = u.user_id" +
-                                " WHERE f.film_id = ?";
-                Film finalFilm = jdbcTemplate.queryForObject(
-                        query, new Object[]{filmId}, new FilmMapperLikes());
-                return finalFilm;
-            } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
+                    "          SELECT f.film_id," +
+                            "              f.film_name," +
+                            "              f.description," +
+                            "              f.releaseDate," +
+                            "              f.duration," +
+                            "              f.rate," +
+                            "              r.rating_name," +
+                            "              r.rating_id," +
+                            "              r.rating_name," +
+                            "              GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
+                            "              COUNT(lk.user_id) AS likes " +
+                            "              FROM film AS f" +
+                            "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                            "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                            "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                            "              LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                            "              LEFT JOIN likes AS lk ON f.film_id = lk.film_id " +
+                            "              WHERE f.film_id = ?", filmId);
+            if (filmRows.next()) {
+                finalFilm = Film.builder()
+                        .id(filmRows.getLong("film_id"))
+                        .name(filmRows.getString("film_name"))
+                        .description(filmRows.getString("description"))
+                        .duration(Long.parseLong(filmRows.getString("duration")))
+                        .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
+                        .rate(filmRows.getInt("rate"))
+                        .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                        .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
+                                .map(Long::parseLong)
+                                .collect(Collectors.toSet()))
+                        .build();
+            }
+
+            List<Long> genresId = jdbcTemplate.queryForList(
+                    "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, filmId);
+
+            List<Genre> genres = new ArrayList<>();
+            if (genresId.get(0) != null) {
+                for (Long genreId : genresId) {
+                    genres.add(genreDbStorage.getGenreId(genreId));
+                }
+            }
+            finalFilm.setGenres(genres);
+
+        } catch (DataAccessException e) {
+            throw new ObjectNotFoundException("Фильм {} не найден");
         }
+        return finalFilm;
     }
 
     @Override
@@ -329,97 +398,127 @@ public class FilmDbStorageImpl implements FilmStorage {
             return true;
         } else {
             log.info("like фильма {} пользователя {} не найден", filmId, userId);
-            return false;
+            throw new ObjectNotFoundException("like фильма не найден");
         }
     }
 
     @Override
     public List<Film> sortPopularFilm(Integer count) throws ValidationException {
 
-//        Integer realCount = count;
-//        ArrayList<Film> films = new ArrayList<>();
-//        if (count == null || count == 0) {
-//            realCount = 10;
-//        } else if (count < 0) {
-//            throw new ValidationException("Значение не может быть отрицательным");
-//        }
-//
-//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
-//                "SELECT f.film_id, " +
-//                        " f.film_name, " +
-//                        " f.description, " +
-//                        " f.duration, " +
-//                        " f.releaseDate, " +
-//                        " GROUP_CONCAT(g.name) AS genreFilm, " +
-//                        " r.name, " +
-//                        " GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
-//                        " COUNT(lk.user_id) AS likes " +
-//                        " FROM film AS f " +
-//                        " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-//                        " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-//                        " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-//                        " LEFT JOIN likes AS l ON f.film_id = l.film_id" +
-//                        " LEFT JOIN likes AS lk ON f.film_id = lk.film_id" +
-//                        " GROUP BY f.film_id " +
-//                        " ORDER BY likes DESC " +
-//                        " LIMIT ?", realCount);
-//        while (filmRows.next()) {
-//            Film film = Film.builder()
-//                    .id(filmRows.getLong("film_id"))
-//                    .name(filmRows.getString("film_name"))
-//                    .description(filmRows.getString("description"))
-//                    .duration(Long.parseLong(filmRows.getString("duration")))
-//                    .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
-//                    .genres(checkNoGenre(filmRows.getString("genreFilm")))
-//                    .rating(filmRows.getString("name"))
-//                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
-//                            .map(Long::parseLong)
-//                            .collect(Collectors.toSet()))
-//                    .build();
-//            films.add(film);
-//        }
-//        return films;
-        return null;
+        Film finalFilm = null;
+        Integer realCount = count;
+        ArrayList<Film> films = new ArrayList<>();
+
+        if (count == null || count == 0) {
+            realCount = 10;
+        } else if (count < 0) {
+            throw new ValidationException("Значение не может быть отрицательным");
+        }
+
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
+                "          SELECT f.film_id," +
+                        "              f.film_name," +
+                        "              f.description," +
+                        "              f.releaseDate," +
+                        "              f.duration," +
+                        "              f.rate," +
+                        "              r.rating_name," +
+                        "              r.rating_id," +
+                        "              r.rating_name," +
+                        "              GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
+                        "              COUNT(lk.user_id) AS likes " +
+                        "              FROM film AS f" +
+                        "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                        "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                        "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                        "              LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                        "              LEFT JOIN likes AS lk ON f.film_id = lk.film_id " +
+                        "              GROUP BY f.film_id " +
+                        "              ORDER BY likes DESC " +
+                        "              LIMIT ?", realCount);
+        while (filmRows.next()) {
+            finalFilm = Film.builder()
+                    .id(filmRows.getLong("film_id"))
+                    .name(filmRows.getString("film_name"))
+                    .description(filmRows.getString("description"))
+                    .duration(Long.parseLong(filmRows.getString("duration")))
+                    .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
+                    .rate(filmRows.getInt("rate"))
+                    .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
+                            .map(Long::parseLong)
+                            .collect(Collectors.toSet()))
+                    .build();
+
+            List<Long> genresId = jdbcTemplate.queryForList(
+                    "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, finalFilm.getId());
+
+            List<Genre> genres = new ArrayList<>();
+            if (genresId.get(0) != null) {
+                for (Long genreId : genresId) {
+                    genres.add(genreDbStorage.getGenreId(genreId));
+                }
+            }
+
+            finalFilm.setGenres(genres);
+            films.add(finalFilm);
+        }
+        return films;
     }
 
     @Override
     public List<Film> getAllPopular() {
         ArrayList<Film> films = new ArrayList<>();
 
-//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
-//                "SELECT f.film_id, " +
-//                        " f.film_name, " +
-//                        " f.description, " +
-//                        " f.duration, " +
-//                        " f.releaseDate, " +
-//                        " GROUP_CONCAT(g.name) AS genreFilm, " +
-//                        " r.name, " +
-//                        " GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
-//                        " COUNT(lk.user_id) AS likes " +
-//                        " FROM film AS f " +
-//                        " LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
-//                        " LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
-//                        " LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
-//                        " LEFT JOIN likes AS l ON f.film_id = l.film_id" +
-//                        " LEFT JOIN likes AS lk ON f.film_id = lk.film_id" +
-//                        " GROUP BY f.film_id " +
-//                        " ORDER BY likes DESC ");
-//        while (filmRows.next()) {
-//            Film film = Film.builder()
-//                    .id(filmRows.getLong("film_id"))
-//                    .name(filmRows.getString("film_name"))
-//                    .description(filmRows.getString("description"))
-//                    .duration(Long.parseLong(filmRows.getString("duration")))
-//                    .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
-//                    .genres(checkNoGenre(filmRows.getString("genreFilm")))
-//                    .rating(filmRows.getString("name"))
-//                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
-//                            .map(Long::parseLong)
-//                            .collect(Collectors.toSet()))
-//                    .build();
-//            films.add(film);
-//        }
-//        return films;
-        return null;
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
+                "          SELECT f.film_id," +
+                        "              f.film_name," +
+                        "              f.description," +
+                        "              f.releaseDate," +
+                        "              f.duration," +
+                        "              f.rate," +
+                        "              r.rating_name," +
+                        "              r.rating_id," +
+                        "              r.rating_name," +
+                        "              GROUP_CONCAT(l.user_id) AS listOfUsersLike, " +
+                        "              COUNT(lk.user_id) AS likes " +
+                        "              FROM film AS f" +
+                        "              LEFT JOIN genre_film AS gf ON f.film_id = gf.film_id" +
+                        "              LEFT JOIN genre AS g ON gf.genre_id = g.genre_id" +
+                        "              LEFT JOIN rating AS r ON f.rating_id = r.rating_id" +
+                        "              LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                        "              LEFT JOIN likes AS lk ON f.film_id = lk.film_id " +
+                        "              GROUP BY f.film_id " +
+                        "              ORDER BY likes DESC ");
+        while (filmRows.next()) {
+            Film finalFilm = Film.builder()
+                    .id(filmRows.getLong("film_id"))
+                    .name(filmRows.getString("film_name"))
+                    .description(filmRows.getString("description"))
+                    .duration(Long.parseLong(filmRows.getString("duration")))
+                    .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
+                    .rate(filmRows.getInt("rate"))
+                    .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
+                            .map(Long::parseLong)
+                            .collect(Collectors.toSet()))
+                    .build();
+
+            List<Long> genresId = jdbcTemplate.queryForList(
+                    "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, finalFilm.getId());
+
+            List<Genre> genres = new ArrayList<>();
+            if (genresId.get(0) != null) {
+                for (Long genreId : genresId) {
+                    genres.add(genreDbStorage.getGenreId(genreId));
+                }
+            }
+
+            finalFilm.setGenres(genres);
+
+            films.add(finalFilm);
+            ;
+        }
+        return films;
     }
 }
