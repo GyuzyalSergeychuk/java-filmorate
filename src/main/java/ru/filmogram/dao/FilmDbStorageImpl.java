@@ -53,21 +53,36 @@ public class FilmDbStorageImpl implements FilmStorage {
     @Override
     public Film createFilm(Film film) throws ValidationException {
 
-        Mpa mpa = mpaDbStorage.getMpaId(film.getRating().getId());
+        Mpa mpa = null;
+        try {
+            mpa = mpaDbStorage.getMpaId(film.getMpa().getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film")
                 .usingGeneratedKeyColumns("film_id");
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("film_name", film.getName());
-        parameters.put("description", film.getDescription());
-        parameters.put("releaseDate", film.getReleaseDate());
-        parameters.put("duration", film.getDuration());
-        parameters.put("rating_id", mpa.getId());
-        parameters.put("rate", film.getRate());
+        Map<String, Object> parameters = null;
+        try {
+            parameters = new HashMap<String, Object>();
+            parameters.put("film_name", film.getName());
+            parameters.put("description", film.getDescription());
+            parameters.put("releaseDate", film.getReleaseDate());
+            parameters.put("duration", film.getDuration());
+            parameters.put("rating_id", mpa.getId());
+            parameters.put("rate", film.getRate());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        Long filmId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long filmId = null;
+        try {
+            filmId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         List<Genre> genres = new ArrayList<>();
         for (Genre genre : film.getGenres()) {
@@ -86,7 +101,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                 "              WHERE f.film_id = ?";
         Film finalFilm = jdbcTemplate.queryForObject(
                 query, new Object[]{filmId}, new FilmMapper());
-        finalFilm.setRating(mpa);
+        finalFilm.setMpa(mpa);
         finalFilm.setGenres(genres);
         finalFilm.setRate(film.getRate());
         return finalFilm;
@@ -120,7 +135,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                         .duration(Long.parseLong(filmRows.getString("duration")))
                         .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                         .rate(filmRows.getInt("rate"))
-                        .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                        .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                         .build();
             }
 
@@ -171,7 +186,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                         .duration(Long.parseLong(filmRows.getString("duration")))
                         .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                         .rate(filmRows.getInt("rate"))
-                        .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                        .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                         .build();
 
                 List<Long> genresId = jdbcTemplate.queryForList(
@@ -233,7 +248,7 @@ public class FilmDbStorageImpl implements FilmStorage {
             }
         }
 
-        Mpa mpa = mpaDbStorage.getMpaId(film.getRating().getId());
+        Mpa mpa = mpaDbStorage.getMpaId(film.getMpa().getId());
 
         jdbcTemplate.update(
                 "UPDATE film SET film_name = ?, " +
@@ -263,7 +278,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                     "              WHERE f.film_id = ?";
             finalFilm = jdbcTemplate.queryForObject(
                     query, new Object[]{film.getId()}, new FilmMapper());
-            finalFilm.setRating(mpa);
+            finalFilm.setMpa(mpa);
             finalFilm.setGenres(genreFinal);
         } catch (DataAccessException e) {
             throw new ObjectNotFoundException("Фильм {} не найден");
@@ -309,7 +324,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                             .duration(Long.parseLong(filmRows.getString("duration")))
                             .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                             .rate(filmRows.getInt("rate"))
-                            .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                            .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                             .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
                                     .map(Long::parseLong)
                                     .collect(Collectors.toSet()))
@@ -360,7 +375,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                         .duration(Long.parseLong(filmRows.getString("duration")))
                         .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                         .rate(filmRows.getInt("rate"))
-                        .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                        .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                         .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
                                 .map(Long::parseLong)
                                 .collect(Collectors.toSet()))
@@ -444,7 +459,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                     .duration(Long.parseLong(filmRows.getString("duration")))
                     .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                     .rate(filmRows.getInt("rate"))
-                    .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                    .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                     .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
                             .map(Long::parseLong)
                             .collect(Collectors.toSet()))
@@ -498,7 +513,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                     .duration(Long.parseLong(filmRows.getString("duration")))
                     .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                     .rate(filmRows.getInt("rate"))
-                    .rating(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
+                    .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                     .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
                             .map(Long::parseLong)
                             .collect(Collectors.toSet()))

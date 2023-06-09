@@ -6,7 +6,6 @@ import ru.filmogram.model.Film;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Set;
 
 public class FilmMapper implements RowMapper<Film> {
 
@@ -21,12 +20,5 @@ public class FilmMapper implements RowMapper<Film> {
                 .releaseDate(LocalDate.parse(rs.getString("releaseDate")))
                 .rate(rs.getInt("rate"))
                 .build();
-    }
-
-    private Set<String> checkNoLike(String likes) {
-        if (likes == null) {
-            return Set.of();
-        }
-        return Set.of(likes.split(","));
     }
 }

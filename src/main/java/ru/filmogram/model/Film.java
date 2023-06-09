@@ -18,7 +18,7 @@ public class Film implements Comparable<Film> {
     private String description;
     private LocalDate releaseDate;
     private List<Genre> genres;
-    private Mpa rating;
+    private Mpa mpa;
     private Integer rate;
     // продолжительность фильма в минутах
     private long duration;
@@ -59,7 +59,7 @@ public class Film implements Comparable<Film> {
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
                 ", genres=" + genres +
-                ", rating=" + rating +
+                ", mpa=" + mpa +
                 ", rate=" + rate +
                 ", duration=" + duration +
                 ", likes=" + likes +
@@ -71,11 +71,11 @@ public class Film implements Comparable<Film> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Film film = (Film) o;
-        return duration == film.duration && Objects.equals(id, film.id) && Objects.equals(name, film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(genres, film.genres) && Objects.equals(rating, film.rating) && Objects.equals(rate, film.rate) && Objects.equals(likes, film.likes);
+        return duration == film.duration && Objects.equals(id, film.id) && Objects.equals(name, film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(genres, film.genres) && Objects.equals(mpa, film.mpa) && Objects.equals(rate, film.rate) && Objects.equals(likes, film.likes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, releaseDate, genres, rating, rate, duration, likes);
+        return Objects.hash(id, name, description, releaseDate, genres, mpa, rate, duration, likes);
     }
 }

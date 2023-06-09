@@ -23,7 +23,7 @@ public class FilmMapperLikes implements RowMapper<Film> {
                 .description(rs.getString("description"))
                 .duration(rs.getLong("duration"))
                 .releaseDate(LocalDate.parse(rs.getString("releaseDate")))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(rs.getLong("rating_id"))
                         .build())
                 .genres(checkNoGenre(rs.getString("genreFilm")))

@@ -39,7 +39,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(1L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -55,7 +55,7 @@ class FilmDbStorageImplTests {
         assertEquals(film.getDescription(), createdFilm.getDescription());
         assertEquals(film.getGenres().get(0).getId(), createdFilm.getGenres().get(0).getId());
         assertEquals(film.getRate(), createdFilm.getRate());
-        assertEquals(film.getRating().getId(), createdFilm.getRating().getId());
+        assertEquals(film.getMpa().getId(), createdFilm.getMpa().getId());
     }
 
     @Test
@@ -65,7 +65,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(1L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -79,7 +79,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар111: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(2L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -99,7 +99,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(3L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -113,7 +113,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: 222")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(2L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -125,7 +125,7 @@ class FilmDbStorageImplTests {
         List<Film> expectedFilms = new ArrayList<>(List.of(expectedFilm1, expectedFilm2));
         List<Film> actualFilms = filmStorage.findAllFilm();
 
-        assertEquals(expectedFilms.get(0).getRating(), actualFilms.get(0).getRating());
+        assertEquals(expectedFilms.get(0).getMpa(), actualFilms.get(0).getMpa());
         assertEquals(expectedFilms.get(1).getGenres(), actualFilms.get(1).getGenres());
         assertEquals(expectedFilms.size(), actualFilms.size());
     }
@@ -137,7 +137,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(1L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -152,7 +152,7 @@ class FilmDbStorageImplTests {
                 .duration(500L)
                 .name("НОВЫЙ АВАТАР")
                 .releaseDate(LocalDate.of(2023, 01, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(3L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -165,7 +165,7 @@ class FilmDbStorageImplTests {
 
         assertEquals(expectedFilm.getId(), actualFilm.getId());
         assertEquals("Триллер", actualFilm.getGenres().get(0).getName());
-        assertEquals("PG-13", actualFilm.getRating().getName());
+        assertEquals("PG-13", actualFilm.getMpa().getName());
         assertEquals(expectedFilm.getDuration(), actualFilm.getDuration());
         assertEquals(expectedFilm.getRate(), actualFilm.getRate());
     }
@@ -177,7 +177,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(3L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -214,7 +214,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(3L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -243,7 +243,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(3L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -259,7 +259,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: 1111")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(2L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -313,7 +313,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: Путь воды")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(3L)
                         .build())
                 .genres(List.of(Genre.builder()
@@ -329,7 +329,7 @@ class FilmDbStorageImplTests {
                 .duration(192L)
                 .name("Аватар: 1111")
                 .releaseDate(LocalDate.of(2022, 12, 06))
-                .rating(Mpa.builder()
+                .mpa(Mpa.builder()
                         .id(2L)
                         .build())
                 .genres(List.of(Genre.builder()
