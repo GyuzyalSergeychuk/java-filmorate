@@ -30,17 +30,17 @@ public class GenreDbStorageImpl implements GenreStorage {
         Genre genre = null;
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(
-                    "SELECT genre_id, " +
-                            "genre_name " +
-                            "FROM genre " +
-                            "WHERE genre_id = ?", id);
-            if (genreRows.next()) {
-                genre = Genre.builder()
-                        .id(genreRows.getLong("genre_id"))
-                        .name(genreRows.getString("genre_name"))
-                        .build();
-                return genre;
-            } else {
+                "SELECT genre_id, " +
+                        "genre_name " +
+                        "FROM genre " +
+                        "WHERE genre_id = ?", id);
+        if (genreRows.next()) {
+            genre = Genre.builder()
+                    .id(genreRows.getLong("genre_id"))
+                    .name(genreRows.getString("genre_name"))
+                    .build();
+            return genre;
+        } else {
             throw new ObjectNotFoundException("Жанр не найден");
         }
     }

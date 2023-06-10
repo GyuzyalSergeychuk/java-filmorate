@@ -87,7 +87,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         List<Genre> genres = new ArrayList<>();
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {
-                if(!genres.contains(genre)) {
+                if (!genres.contains(genre)) {
                     genres.add(genreDbStorage.getGenre(genre.getId()));
                     jdbcTemplate.update("INSERT INTO genre_film (film_id, genre_id) VALUES (?, ?)",
                             filmId, genre.getId());
@@ -242,7 +242,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         if (!(film.getGenres() == null)) {
             for (Genre genre : film.getGenres()) {
                 Genre newGenre = genreDbStorage.getGenre(genre.getId());
-                if(!genreFinal.contains(genre)) {
+                if (!genreFinal.contains(genre)) {
                     genreFinal.add(genreDbStorage.getGenre(genre.getId()));
                 }
                 if (!genresOldList.contains(newGenre)) {
@@ -261,7 +261,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                 }
             }
         }
-
 
         Mpa mpa = mpaDbStorage.getMpaId(film.getMpa().getId());
 
@@ -299,7 +298,6 @@ public class FilmDbStorageImpl implements FilmStorage {
             throw new ObjectNotFoundException("Фильм {} не найден");
         }
         return finalFilm;
-
     }
 
     @Override
@@ -341,7 +339,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                             .rate(filmRows.getInt("rate"))
                             .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                             .build();
-
 
                     List<Long> genresId = jdbcTemplate.queryForList(
                             "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, finalFilm.getId());
@@ -389,7 +386,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                         .rate(filmRows.getInt("rate"))
                         .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                         .build();
-
 
                 List<Long> genresId = jdbcTemplate.queryForList(
                         "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, finalFilm.getId());
@@ -471,7 +467,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                     .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
                     .build();
 
-
             List<Long> genresId = jdbcTemplate.queryForList(
                     "SELECT genre_id FROM genre_film WHERE film_id = ?", Long.class, finalFilm.getId());
 
@@ -520,9 +515,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                     .releaseDate(LocalDate.parse(filmRows.getString("releaseDate")))
                     .rate(filmRows.getInt("rate"))
                     .mpa(makeMpa(filmRows.getLong("rating_id"), filmRows.getString("rating_name")))
-//                    .likes(Stream.of(filmRows.getString("listOfUsersLike").split(","))
-//                            .map(Long::parseLong)
-//                            .collect(Collectors.toSet()))
                     .build();
 
             List<Long> genresId = jdbcTemplate.queryForList(

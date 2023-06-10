@@ -116,7 +116,4 @@ public class InMemoryFilmStorage implements FilmStorage {
             return film;
         }
     }
-    public void deleteAllTables() {
-
-    }
 }

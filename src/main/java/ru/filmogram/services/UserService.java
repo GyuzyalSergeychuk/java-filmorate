@@ -38,16 +38,16 @@ public class UserService {
         return userStorage.updateUser(afterCheckUser);
     }
 
-    public User getIdUser(Long id){
+    public User getIdUser(Long id) {
         return userStorage.getUserId(id);
     }
 
-    public boolean addFriends(Long id, Long friendId){
-        if(id < 0){
+    public boolean addFriends(Long id, Long friendId) {
+        if (id < 0) {
             throw new ObjectNotFoundException(
                     String.format("id пользователя {} не может быть отрицательным", id));
         }
-        if(friendId < 0){
+        if (friendId < 0) {
             throw new ObjectNotFoundException(
                     String.format("friendId пользователя {} не может быть отрицательным", friendId));
         }
@@ -55,11 +55,11 @@ public class UserService {
     }
 
     public void deleteUserFriendsId(Long id, Long friendId) throws ValidationException {
-        if(id < 0 && id == null){
+        if (id <= 0) {
             throw new ValidationException(
                     String.format("id пользователя {} не может быть отрицательным", id));
         }
-        if(friendId < 0 && id == null){
+        if (friendId <= 0) {
             throw new ValidationException(
                     String.format("friendId пользователя {} не может быть отрицательным", friendId));
         }
@@ -67,18 +67,18 @@ public class UserService {
     }
 
     public List<User> allFriends(Long id) throws ValidationException {
-        if(id < 0 && id == null){
+        if (id <= 0) {
             throw new ValidationException(String.format("Пользователь {} не найден", id));
         }
         return userStorage.getFriends(id);
     }
 
     public List<User> allCommonFriends(Long id, Long otherId) throws ValidationException {
-        if(id < 0 && id == null){
+        if (id <= 0) {
             throw new ValidationException(
                     String.format("id пользователя {} не может быть отрицательным", id));
         }
-        if(otherId < 0 && id == null){
+        if (otherId <= 0) {
             throw new ValidationException(
                     String.format("otherId пользователя {} не может быть отрицательным", otherId));
         }

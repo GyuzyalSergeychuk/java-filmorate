@@ -190,8 +190,10 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
-        jdbcTemplate.update("delete from friends where friend_one_id = ? AND friend_two_id = ?", userId, friendId);
-        jdbcTemplate.update("delete from friends where friend_two_id = ? AND friend_one_id = ? AND status = true", userId, friendId);
+        jdbcTemplate.update("delete from friends where friend_one_id = ? AND friend_two_id = ?",
+                userId, friendId);
+        jdbcTemplate.update("delete from friends where friend_two_id = ? AND friend_one_id = ? AND status = true",
+                userId, friendId);
     }
 
     @Override
@@ -213,7 +215,7 @@ public class UserDbStorageImpl implements UserStorage {
                             "FROM users AS u " +
                             "JOIN friends AS f ON u.user_id = f.friend_two_id " +
                             "WHERE f.friend_one_id = ?"
-                            , userId.get(0));
+                    , userId.get(0));
             while (rs.next()) {
                 User user = User.builder()
                         .id(rs.getLong("user_id"))
@@ -257,24 +259,25 @@ public class UserDbStorageImpl implements UserStorage {
     public List<User> getCommonFriends(Long id, Long otherId) {
         List<User> friendOne = new ArrayList<>();
         List<User> friendTwo = new ArrayList<>();
-        List<User> commonFriends= new ArrayList<>();
+        List<User> commonFriends = new ArrayList<>();
 
         if (id > 0) {
             friendOne = getFriends(id);
-            }
+        }
+
         if (otherId > 0) {
             friendTwo = getFriends(otherId);
         }
-        if ((id == 0 && id < 0) && (otherId == 0 && otherId < 0)) {
+
+        if (id <= 0 || otherId <= 0) {
             log.info("Пользователь не существует");
         }
 
         for (User user : friendTwo) {
-            if(friendOne.contains(user)){
+            if (friendOne.contains(user)) {
                 commonFriends.add(user);
+            }
         }
-    }
         return commonFriends;
-}
-
+    }
 }

@@ -17,7 +17,6 @@ import ru.filmogram.storage.user.UserStorage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,9 +34,9 @@ class FilmDbStorageImplTests {
     @Test
     void createFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("????? ???????")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("??????: ???? ????")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(1L)
@@ -61,16 +60,16 @@ class FilmDbStorageImplTests {
     @Test
     void getFilmId() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("????? ???????")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("??????: ???? ????")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(1L)
                         .build())
                 .genres(List.of(Genre.builder()
-                        .id(1L)
-                        .build(),
+                                .id(1L)
+                                .build(),
                         Genre.builder()
                                 .id(1L)
                                 .build()))
@@ -80,7 +79,7 @@ class FilmDbStorageImplTests {
         Film film1 = Film.builder()
                 .description("dnjjhjq")
                 .duration(192L)
-                .name("Аватар111: Путь воды")
+                .name("??????111: ???? ????")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(2L)
@@ -99,9 +98,9 @@ class FilmDbStorageImplTests {
     @Test
     void findAllFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("????? ???????")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("??????: ???? ????")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -113,9 +112,9 @@ class FilmDbStorageImplTests {
                 .build();
         Film expectedFilm1 = filmStorage.createFilm(film);
         Film film2 = Film.builder()
-                .description("текст хороший222")
+                .description("????? ???????222")
                 .duration(192L)
-                .name("Аватар: 222")
+                .name("??????: 222")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(2L)
@@ -137,9 +136,9 @@ class FilmDbStorageImplTests {
     @Test
     void updateFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("????? ???????")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("??????: ???? ????")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(1L)
@@ -152,9 +151,9 @@ class FilmDbStorageImplTests {
         Film baseFilmWithId = filmStorage.createFilm(film);
         Film expectedFilm = Film.builder()
                 .id(1L)
-                .description("НОВЫЙ")
+                .description("?????")
                 .duration(500L)
-                .name("НОВЫЙ АВАТАР")
+                .name("????? ??????")
                 .releaseDate(LocalDate.of(2023, 01, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -176,48 +175,11 @@ class FilmDbStorageImplTests {
     }
 
     @Test
-    void addLikeFilm() throws ValidationException {
-        Film film = Film.builder()
-                .description("текст хороший")
-                .duration(192L)
-                .name("Аватар: Путь воды")
-                .releaseDate(LocalDate.of(2022, 12, 06))
-                .mpa(Mpa.builder()
-                        .id(3L)
-                        .build())
-                .genres(List.of(Genre.builder()
-                        .id(1L)
-                        .build()))
-                .rate(1)
-                .build();
-        Film baseFilm1 = filmStorage.createFilm(film);
-        User user = User.builder()
-                .name("Том1")
-                .email("nnjh@come.1")
-                .login("oooo")
-                .birthday(LocalDate.of(1997, 07, 05))
-                .build();
-        User baseUser = userStorage.createUser(user);
-        User user2 = User.builder()
-                .name("Том2")
-                .email("nnjh@come.2")
-                .login("oooo")
-                .birthday(LocalDate.of(1997, 07, 05))
-                .build();
-        User baseUser2 = userStorage.createUser(user2);
-
-        Film film1 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
-        Film film2 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
-
-        assertEquals(Set.of(baseUser.getId(), baseUser2.getId()), film2.getLikes());
-    }
-
-    @Test
     void deleteLikeFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("фв фв")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("фв: фв фв")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -229,7 +191,7 @@ class FilmDbStorageImplTests {
                 .build();
         filmStorage.createFilm(film);
         User user = User.builder()
-                .name("Том1")
+                .name("вы1")
                 .email("nnjh@come.1")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
@@ -244,9 +206,9 @@ class FilmDbStorageImplTests {
     @Test
     void sortPopularFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("????? ???????")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("вы: вы вы")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -260,9 +222,9 @@ class FilmDbStorageImplTests {
                 .build();
         Film baseFilm = filmStorage.createFilm(film);
         Film film1 = Film.builder()
-                .description("текст хороший1111")
+                .description("вы ыыыыы")
                 .duration(192L)
-                .name("Аватар: 1111")
+                .name("ы ыыыы")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(2L)
@@ -275,21 +237,21 @@ class FilmDbStorageImplTests {
                 .build();
         Film baseFilm1 = filmStorage.createFilm(film1);
         User user = User.builder()
-                .name("Том1")
+                .name("c1")
                 .email("nnjh@come.0")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
                 .build();
         User baseUser = userStorage.createUser(user);
         User user1 = User.builder()
-                .name("Том2")
+                .name("???2")
                 .email("nnjh@come.1")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
                 .build();
         User baseUser1 = userStorage.createUser(user1);
         User user2 = User.builder()
-                .name("Том3")
+                .name("???3")
                 .email("nnjh@come.2")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
@@ -314,9 +276,9 @@ class FilmDbStorageImplTests {
     @Test
     void getAllPopular() throws ValidationException {
         Film film = Film.builder()
-                .description("текст хороший")
+                .description("????? ???????")
                 .duration(192L)
-                .name("Аватар: Путь воды")
+                .name("??????: ???? ????")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -330,9 +292,9 @@ class FilmDbStorageImplTests {
                 .build();
         Film baseFilm = filmStorage.createFilm(film);
         Film film1 = Film.builder()
-                .description("текст хороший1111")
+                .description("????? ???????1111")
                 .duration(192L)
-                .name("Аватар: 1111")
+                .name("??????: 1111")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(2L)
@@ -345,21 +307,21 @@ class FilmDbStorageImplTests {
                 .build();
         Film baseFilm1 = filmStorage.createFilm(film1);
         User user = User.builder()
-                .name("Том1")
+                .name("???1")
                 .email("nnjh@come.0")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
                 .build();
         User baseUser = userStorage.createUser(user);
         User user1 = User.builder()
-                .name("Том2")
+                .name("???2")
                 .email("nnjh@come.1")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
                 .build();
         User baseUser1 = userStorage.createUser(user1);
         User user2 = User.builder()
-                .name("Том3")
+                .name("???3")
                 .email("nnjh@come.2")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))

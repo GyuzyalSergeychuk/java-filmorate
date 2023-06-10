@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 import ru.filmogram.storage.film.FilmStorage;
@@ -38,27 +39,27 @@ public class FilmService {
     }
 
     public Film addLike(Long id, Long userId) throws ValidationException {
-        if (id < 0 && id == null){
+        if (id <= 0) {
             throw new ValidationException(String.format("Фильм {} не найден", id));
         }
-        if (userId < 0 && userId == null) {
+        if (userId <= 0) {
             throw new ValidationException(String.format("Пользователь {} не найден", userId));
         }
         return filmStorage.addLikeFilm(id, userId);
     }
 
-    public boolean deleteLike(Long id, Long userId) throws ValidationException {
-        if (id < 0 && id == null){
-            throw new ValidationException(String.format("Фильм {} не найден", id));
+    public boolean deleteLike(Long id, Long userId) {
+        if (id <= 0) {
+            throw new ObjectNotFoundException(String.format("Фильм {} не найден", id));
         }
-        if (userId < 0 && userId == null) {
-            throw new ValidationException(String.format("Пользователь {} не найден", userId));
+        if (userId <= 0) {
+            throw new ObjectNotFoundException(String.format("Пользователь {} не найден", userId));
         }
         return filmStorage.deleteLikeFilm(id, userId);
     }
 
     public List<Film> sortFilmCount(Integer count) throws ValidationException {
-        if (count < 0){
+        if (count < 0) {
             throw new ValidationException(String.format("{} не может быть отрицательным", count));
         }
         return filmStorage.sortPopularFilm(count);
@@ -69,7 +70,7 @@ public class FilmService {
     }
 
     public Film getIdFilm(Long id) throws ValidationException {
-        if (id < 0 && id == null){
+        if (id <= 0) {
             throw new ValidationException(String.format("Фильм {} не найден", id));
         }
         return filmStorage.getFilmId(id);
