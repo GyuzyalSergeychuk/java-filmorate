@@ -206,7 +206,7 @@ class FilmDbStorageImplTests {
     @Test
     void sortPopularFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("????? ???????")
+                .description("aaaaa")
                 .duration(192L)
                 .name("вы: вы вы")
                 .releaseDate(LocalDate.of(2022, 12, 06))
