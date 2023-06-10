@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.filmogram.exceptions.ObjectNotFoundException;
 import ru.filmogram.model.Mpa;
 import ru.filmogram.storage.film.MpaStorage;
 
@@ -39,6 +40,8 @@ public class MpaDbStorageImpl implements MpaStorage {
                     .id(mpaRows.getLong("rating_id"))
                     .name(mpaRows.getString("rating_name"))
                     .build();
+        } else {
+            throw new ObjectNotFoundException(String.format("Mpa {} не найден", id));
         }
         return mpa;
     }

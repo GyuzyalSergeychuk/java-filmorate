@@ -1,5 +1,6 @@
 package ru.filmogram.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Mpa;
@@ -10,6 +11,7 @@ import java.util.List;
 @Service
 public class MpaService {
 
+    @Autowired
     private MpaStorage mpaStorage;
 
     public List<Mpa> findAll() {
@@ -17,7 +19,7 @@ public class MpaService {
     }
 
     public Mpa getId(Long id) throws ValidationException {
-        if (id < 0 && id == null){
+        if (id <= 0){
             throw new ValidationException(String.format("id {} не может быть отрицательным", id));
         }
         return mpaStorage.getMpaId(id);

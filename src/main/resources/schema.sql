@@ -15,9 +15,8 @@ CREATE TABLE IF NOT EXISTS film (
     releaseDate DATE,
     duration INTEGER,
     rating_id INTEGER REFERENCES rating (rating_id),
-    rate INTEGER,
-    CONSTRAINT film_chk_releaseDate CHECK (releaseDate > '1985-12-28'),
-    CONSTRAINT film_chk_duration CHECK (duration > 0)
+    rate INTEGER
+--    CONSTRAINT film_chk_duration CHECK (duration > 0)
 );
 
 CREATE TABLE IF NOT EXISTS users (

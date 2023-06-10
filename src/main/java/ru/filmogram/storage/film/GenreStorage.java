@@ -8,5 +8,5 @@ public interface GenreStorage {
 
     List<Genre> findAllGenres();
 
-    Genre getGenreId(Long id);
+    Genre getGenre(Long id);
 }

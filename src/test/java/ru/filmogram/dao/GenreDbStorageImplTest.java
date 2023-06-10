@@ -25,7 +25,7 @@ class GenreDbStorageImplTest {
 
     @Test
     void getGenreId() throws ValidationException {
-        Genre genre = genreStorage.getGenreId(3L);
+        Genre genre = genreStorage.getGenre(3L);
 
         assertEquals("Мультфильм", genre.getName());
     }

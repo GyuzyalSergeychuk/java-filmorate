@@ -70,7 +70,10 @@ class FilmDbStorageImplTests {
                         .build())
                 .genres(List.of(Genre.builder()
                         .id(1L)
-                        .build()))
+                        .build(),
+                        Genre.builder()
+                                .id(1L)
+                                .build()))
                 .rate(1)
                 .build();
         Film createdFilm = filmStorage.createFilm(film);
@@ -89,6 +92,7 @@ class FilmDbStorageImplTests {
                 .build();
         Film createdFilm1 = filmStorage.createFilm(film1);
         assertEquals(createdFilm, filmStorage.getFilmId(createdFilm.getId()));
+        assertEquals(1, createdFilm1.getGenres().size());
         assertEquals(createdFilm1, filmStorage.getFilmId(createdFilm1.getId()));
     }
 
@@ -155,16 +159,17 @@ class FilmDbStorageImplTests {
                 .mpa(Mpa.builder()
                         .id(3L)
                         .build())
-                .genres(List.of(Genre.builder()
-                        .id(4L)
-                        .build()))
+                .genres(List.of(Genre.builder().id(1L).build(),
+                        Genre.builder().id(4L).build(),
+                        Genre.builder().id(1L).build()))
                 .rate(3)
                 .build();
 
         Film actualFilm = filmStorage.updateFilm(expectedFilm);
 
+        assertEquals(2, actualFilm.getGenres().size());
         assertEquals(expectedFilm.getId(), actualFilm.getId());
-        assertEquals("Триллер", actualFilm.getGenres().get(0).getName());
+        assertEquals("Комедия", actualFilm.getGenres().get(0).getName());
         assertEquals("PG-13", actualFilm.getMpa().getName());
         assertEquals(expectedFilm.getDuration(), actualFilm.getDuration());
         assertEquals(expectedFilm.getRate(), actualFilm.getRate());

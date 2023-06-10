@@ -26,7 +26,7 @@ public class GenreDbStorageImpl implements GenreStorage {
     }
 
     @Override
-    public Genre getGenreId(Long id) {
+    public Genre getGenre(Long id) {
         Genre genre = null;
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(
