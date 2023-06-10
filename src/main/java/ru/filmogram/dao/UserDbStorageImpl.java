@@ -176,9 +176,7 @@ public class UserDbStorageImpl implements UserStorage {
                         true, friendId, userId);
                 return true;
             }
-        }
-        //если везде все чисто и никаких записей нет, мы просто создаем запись (статут по дефолту встанет false)
-        else {
+        } else { //если везде все чисто и никаких записей нет, мы просто создаем запись (статут по дефолту встанет false)
             jdbcTemplate.update(
                     "INSERT INTO friends(" +
                             "friend_one_id, " +
@@ -214,8 +212,7 @@ public class UserDbStorageImpl implements UserStorage {
                             "u.birthday " +
                             "FROM users AS u " +
                             "JOIN friends AS f ON u.user_id = f.friend_two_id " +
-                            "WHERE f.friend_one_id = ?"
-                    , userId.get(0));
+                            "WHERE f.friend_one_id = ?", userId.get(0));
             while (rs.next()) {
                 User user = User.builder()
                         .id(rs.getLong("user_id"))
@@ -235,8 +232,7 @@ public class UserDbStorageImpl implements UserStorage {
                             "u.birthday " +
                             "FROM users AS u " +
                             "JOIN friends AS f ON u.user_id = f.friend_one_id " +
-                            "WHERE f.friend_two_id = ? AND status = true "
-                    , userId.get(0));
+                            "WHERE f.friend_two_id = ? AND status = true ", userId.get(0));
             while (rs1.next()) {
                 User user1 = User.builder()
                         .id(rs1.getLong("user_id"))
