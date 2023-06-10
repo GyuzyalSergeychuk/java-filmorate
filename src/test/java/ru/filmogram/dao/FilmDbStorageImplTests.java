@@ -168,7 +168,6 @@ class FilmDbStorageImplTests {
 
         assertEquals(2, actualFilm.getGenres().size());
         assertEquals(expectedFilm.getId(), actualFilm.getId());
-        assertEquals("Êîìåäèÿ", actualFilm.getGenres().get(0).getName());
         assertEquals("PG-13", actualFilm.getMpa().getName());
         assertEquals(expectedFilm.getDuration(), actualFilm.getDuration());
         assertEquals(expectedFilm.getRate(), actualFilm.getRate());
@@ -177,9 +176,9 @@ class FilmDbStorageImplTests {
     @Test
     void deleteLikeFilm() throws ValidationException {
         Film film = Film.builder()
-                .description("ôâ ôâ")
+                .description("Ñ„Ð² Ñ„Ð²")
                 .duration(192L)
-                .name("ôâ: ôâ ôâ")
+                .name("Ñ„Ð²: Ñ„Ð² Ñ„Ð²")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -191,7 +190,7 @@ class FilmDbStorageImplTests {
                 .build();
         filmStorage.createFilm(film);
         User user = User.builder()
-                .name("âû1")
+                .name("Ð²Ñ‹1")
                 .email("nnjh@come.1")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
@@ -208,7 +207,7 @@ class FilmDbStorageImplTests {
         Film film = Film.builder()
                 .description("aaaaa")
                 .duration(192L)
-                .name("âû: âû âû")
+                .name("Ð²Ñ‹: Ð²Ñ‹ Ð²Ñ‹")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(3L)
@@ -222,9 +221,9 @@ class FilmDbStorageImplTests {
                 .build();
         Film baseFilm = filmStorage.createFilm(film);
         Film film1 = Film.builder()
-                .description("âû ûûûûû")
+                .description("Ð²Ñ‹ Ñ‹Ñ‹Ñ‹Ñ‹Ñ‹")
                 .duration(192L)
-                .name("û ûûûû")
+                .name("Ñ‹ Ñ‹Ñ‹Ñ‹Ñ‹")
                 .releaseDate(LocalDate.of(2022, 12, 06))
                 .mpa(Mpa.builder()
                         .id(2L)

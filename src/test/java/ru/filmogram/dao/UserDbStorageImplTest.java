@@ -27,7 +27,7 @@ class UserDbStorageImplTest {
     @Test
     void findAllUser() throws ValidationException {
         User user = User.builder()
-                .name("Том4")
+                .name("РўРѕРј4")
                 .email("nnjh@come.4")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
@@ -35,7 +35,7 @@ class UserDbStorageImplTest {
         userStorage.createUser(user);
 
         User user1 = User.builder()
-                .name("Том14")
+                .name("РўРѕРј14")
                 .email("nnjh@come.1")
                 .login("11111")
                 .birthday(LocalDate.of(2001, 07, 05))
@@ -51,7 +51,7 @@ class UserDbStorageImplTest {
     @Test
     void createUser() throws ValidationException {
         User user = User.builder()
-                .name("Том4")
+                .name("РўРѕРј4")
                 .email("nnjh@come.4")
                 .login("oooo")
                 .birthday(LocalDate.of(1997, 07, 05))
@@ -63,7 +63,7 @@ class UserDbStorageImplTest {
     @Test
     void updateUser() throws ValidationException {
         User user = User.builder()
-                .name("Том14")
+                .name("РўРѕРј14")
                 .email("nnjh@come.1")
                 .login("11111")
                 .birthday(LocalDate.of(2001, 07, 05))
@@ -71,9 +71,9 @@ class UserDbStorageImplTest {
         userStorage.createUser(user);
         User expectedUser = User.builder()
                 .id(1L)
-                .name("ТомНовый")
-                .email("nnjh@come.новый")
-                .login("новый")
+                .name("РўРѕРјРќРѕРІС‹Р№")
+                .email("nnjh@come.РЅРѕРІС‹Р№")
+                .login("РЅРѕРІС‹Р№")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User actualUser = userStorage.updateUser(expectedUser);
@@ -87,14 +87,14 @@ class UserDbStorageImplTest {
     @Test
     void getUserId() throws ValidationException {
         User user = User.builder()
-                .name("Том14")
+                .name("РўРѕРј14")
                 .email("nnjh@come.1")
                 .login("11111")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         userStorage.createUser(user);
         User user1 = User.builder()
-                .name("Том2")
+                .name("РўРѕРј2")
                 .email("nnjh@come.2")
                 .login("2222222")
                 .birthday(LocalDate.of(2001, 07, 05))
@@ -109,28 +109,28 @@ class UserDbStorageImplTest {
     @Test
     void addFriendAndGetFriends() throws ValidationException {
         User user1 = User.builder()
-                .name("Том14")
+                .name("РўРѕРј14")
                 .email("nnjh@come.1")
                 .login("11111")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser1 = userStorage.createUser(user1);
         User user2 = User.builder()
-                .name("Том2")
+                .name("РўРѕРј2")
                 .email("nnjh@come.2")
                 .login("2222222")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser2 = userStorage.createUser(user2);
         User user3 = User.builder()
-                .name("Том3")
+                .name("РўРѕРј3")
                 .email("nnjh@come.3")
                 .login("223332")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser3 = userStorage.createUser(user3);
         User user4 = User.builder()
-                .name("Том5")
+                .name("РўРѕРј5")
                 .email("nnjh@come.3")
                 .login("223332")
                 .birthday(LocalDate.of(2001, 07, 05))
@@ -164,21 +164,21 @@ class UserDbStorageImplTest {
     @Test
     void deleteFriend() throws ValidationException {
         User user = User.builder()
-                .name("Том14")
+                .name("РўРѕРј14")
                 .email("nnjh@come.1")
                 .login("11111")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser = userStorage.createUser(user);
         User friend1 = User.builder()
-                .name("Том2")
+                .name("РўРѕРј2")
                 .email("nnjh@come.2")
                 .login("2222222")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseFriend1 = userStorage.createUser(friend1);
         User friend2 = User.builder()
-                .name("Том3")
+                .name("РўРѕРј3")
                 .email("nnjh@come.3")
                 .login("223332")
                 .birthday(LocalDate.of(2001, 07, 05))
@@ -201,28 +201,28 @@ class UserDbStorageImplTest {
     @Test
     void getCommonFriends() throws ValidationException {
         User user1 = User.builder()
-                .name("Том14")
+                .name("РўРѕРј14")
                 .email("nnjh@come.1")
                 .login("11111")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser1 = userStorage.createUser(user1);
         User user2 = User.builder()
-                .name("Том2")
+                .name("РўРѕРј2")
                 .email("nnjh@come.2")
                 .login("2222222")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser2 = userStorage.createUser(user2);
         User user3 = User.builder()
-                .name("Том3")
+                .name("РўРѕРј3")
                 .email("nnjh@come.3")
                 .login("223332")
                 .birthday(LocalDate.of(2001, 07, 05))
                 .build();
         User baseUser3 = userStorage.createUser(user3);
         User user4 = User.builder()
-                .name("Том5")
+                .name("РўРѕРј5")
                 .email("nnjh@come.3")
                 .login("223332")
                 .birthday(LocalDate.of(2001, 07, 05))
