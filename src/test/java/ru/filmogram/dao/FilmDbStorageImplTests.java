@@ -32,7 +32,7 @@ class FilmDbStorageImplTests {
     UserStorage userStorage;
 
     @Test
-    void createFilm() throws ValidationException {
+    void testCreateFilm() throws ValidationException {
         Film film = Film.builder()
                 .description("????? ???????")
                 .duration(192L)
@@ -48,17 +48,17 @@ class FilmDbStorageImplTests {
                 .build();
         Film createdFilm = filmStorage.createFilm(film);
 
-        assertEquals(film.getName(), createdFilm.getName());
-        assertEquals(film.getDuration(), createdFilm.getDuration());
-        assertEquals(film.getReleaseDate(), createdFilm.getReleaseDate());
-        assertEquals(film.getDescription(), createdFilm.getDescription());
-        assertEquals(film.getGenres().get(0).getId(), createdFilm.getGenres().get(0).getId());
-        assertEquals(film.getRate(), createdFilm.getRate());
-        assertEquals(film.getMpa().getId(), createdFilm.getMpa().getId());
+        assertEquals(film.getName(), createdFilm.getName(), "Название фильма успешно добавлено");
+        assertEquals(film.getDuration(), createdFilm.getDuration(), "Продолжительность фильма добавлена");
+        assertEquals(film.getReleaseDate(), createdFilm.getReleaseDate(), "Дата релиза добавлена");
+        assertEquals(film.getDescription(), createdFilm.getDescription(), "Описание добавлено");
+        assertEquals(film.getGenres().get(0).getId(), createdFilm.getGenres().get(0).getId(), "Жанры добавлены");
+        assertEquals(film.getRate(), createdFilm.getRate(), "rate добавлено");
+        assertEquals(film.getMpa().getId(), createdFilm.getMpa().getId(), "Mpa добавлена");
     }
 
     @Test
-    void getFilmId() throws ValidationException {
+    void testGetFilmId() throws ValidationException {
         Film film = Film.builder()
                 .description("????? ???????")
                 .duration(192L)
@@ -90,13 +90,14 @@ class FilmDbStorageImplTests {
                 .rate(1)
                 .build();
         Film createdFilm1 = filmStorage.createFilm(film1);
+
         assertEquals(createdFilm, filmStorage.getFilmId(createdFilm.getId()));
         assertEquals(1, createdFilm1.getGenres().size());
         assertEquals(createdFilm1, filmStorage.getFilmId(createdFilm1.getId()));
     }
 
     @Test
-    void findAllFilm() throws ValidationException {
+    void testFindAllFilm() throws ValidationException {
         Film film = Film.builder()
                 .description("????? ???????")
                 .duration(192L)
@@ -134,7 +135,7 @@ class FilmDbStorageImplTests {
     }
 
     @Test
-    void updateFilm() throws ValidationException {
+    void testUpdateFilm() throws ValidationException {
         Film film = Film.builder()
                 .description("????? ???????")
                 .duration(192L)
@@ -174,7 +175,7 @@ class FilmDbStorageImplTests {
     }
 
     @Test
-    void deleteLikeFilm() throws ValidationException {
+    void testDeleteLikeFilm() throws ValidationException {
         Film film = Film.builder()
                 .description("фв фв")
                 .duration(192L)
@@ -203,7 +204,7 @@ class FilmDbStorageImplTests {
     }
 
     @Test
-    void sortPopularFilm() throws ValidationException {
+    void testSortPopularFilm() throws ValidationException {
         Film film = Film.builder()
                 .description("aaaaa")
                 .duration(192L)
@@ -257,9 +258,9 @@ class FilmDbStorageImplTests {
                 .build();
         User baseUser2 = userStorage.createUser(user2);
 
-        Film film2 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
-        Film film3 = filmStorage.addLikeFilm(baseFilm.getId(), baseUser1.getId());
-        Film film4 = filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
+        filmStorage.addLikeFilm(baseFilm1.getId(), baseUser.getId());
+        filmStorage.addLikeFilm(baseFilm.getId(), baseUser1.getId());
+        filmStorage.addLikeFilm(baseFilm1.getId(), baseUser2.getId());
 
         List<Film> actualFilms = filmStorage.sortPopularFilm(0);
 
@@ -273,7 +274,7 @@ class FilmDbStorageImplTests {
     }
 
     @Test
-    void getAllPopular() throws ValidationException {
+    void testGetAllPopular() throws ValidationException {
         Film film = Film.builder()
                 .description("????? ???????")
                 .duration(192L)

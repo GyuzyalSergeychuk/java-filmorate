@@ -24,16 +24,16 @@ class GenreDbStorageImplTest {
     GenreStorage genreStorage;
 
     @Test
-    void getGenreId() throws ValidationException {
+    void testGetGenreId() throws ValidationException {
         Genre genre = genreStorage.getGenre(3L);
 
         assertEquals("Мультфильм", genre.getName());
     }
 
     @Test
-    void findAllGenres() throws ValidationException {
+    void testFindAllGenres() throws ValidationException {
         List<Genre> allGenre = genreStorage.findAllGenres();
 
-        assertEquals(6, allGenre.size());
+        assertEquals(6, allGenre.size(), "Количество жанров соответствует");
     }
 }

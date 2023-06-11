@@ -6,7 +6,6 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -64,18 +63,5 @@ public class Film implements Comparable<Film> {
                 ", duration=" + duration +
                 ", likes=" + likes +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Film film = (Film) o;
-        return duration == film.duration && Objects.equals(id, film.id) && Objects.equals(name, film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(genres, film.genres) && Objects.equals(mpa, film.mpa) && Objects.equals(rate, film.rate) && Objects.equals(likes, film.likes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, releaseDate, genres, mpa, rate, duration, likes);
     }
 }

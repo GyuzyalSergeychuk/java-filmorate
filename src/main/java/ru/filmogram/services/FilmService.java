@@ -1,7 +1,6 @@
 package ru.filmogram.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.filmogram.exceptions.ObjectNotFoundException;
@@ -13,9 +12,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FilmService {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Qualifier("filmDbStorageImpl")
     private FilmStorage filmStorage;
@@ -38,29 +36,29 @@ public class FilmService {
         return filmStorage.updateFilm(afterCheckFilm);
     }
 
-    public Film addLike(Long id, Long userId) throws ValidationException {
+    public boolean addLike(Long id, Long userId) throws ValidationException {
         if (id <= 0) {
-            throw new ValidationException(String.format("Фильм {} не найден", id));
+            throw new ValidationException(String.format("Фильм %d не найден", id));
         }
         if (userId <= 0) {
-            throw new ValidationException(String.format("Пользователь {} не найден", userId));
+            throw new ValidationException(String.format("Пользователь %d не найден", userId));
         }
         return filmStorage.addLikeFilm(id, userId);
     }
 
     public boolean deleteLike(Long id, Long userId) {
         if (id <= 0) {
-            throw new ObjectNotFoundException(String.format("Фильм {} не найден", id));
+            throw new ObjectNotFoundException(String.format("Фильм %d не найден", id));
         }
         if (userId <= 0) {
-            throw new ObjectNotFoundException(String.format("Пользователь {} не найден", userId));
+            throw new ObjectNotFoundException(String.format("Пользователь %d не найден", userId));
         }
         return filmStorage.deleteLikeFilm(id, userId);
     }
 
     public List<Film> sortFilmCount(Integer count) throws ValidationException {
         if (count < 0) {
-            throw new ValidationException(String.format("{} не может быть отрицательным", count));
+            throw new ValidationException(String.format("%d не может быть отрицательным", count));
         }
         return filmStorage.sortPopularFilm(count);
     }
@@ -71,7 +69,7 @@ public class FilmService {
 
     public Film getIdFilm(Long id) throws ValidationException {
         if (id <= 0) {
-            throw new ValidationException(String.format("Фильм {} не найден", id));
+            throw new ValidationException(String.format("Фильм %d не найден", id));
         }
         return filmStorage.getFilmId(id);
     }

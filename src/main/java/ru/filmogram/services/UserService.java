@@ -1,7 +1,6 @@
 package ru.filmogram.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.filmogram.exceptions.ObjectNotFoundException;
@@ -13,9 +12,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserService {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Qualifier("userDbStorageImpl")
     private final UserStorage userStorage;
@@ -45,11 +43,11 @@ public class UserService {
     public boolean addFriends(Long id, Long friendId) {
         if (id < 0) {
             throw new ObjectNotFoundException(
-                    String.format("id пользователя {} не может быть отрицательным", id));
+                    String.format("id пользователя %d не может быть отрицательным", id));
         }
         if (friendId < 0) {
             throw new ObjectNotFoundException(
-                    String.format("friendId пользователя {} не может быть отрицательным", friendId));
+                    String.format("friendId пользователя %d не может быть отрицательным", friendId));
         }
         return userStorage.addFriend(id, friendId);
     }
@@ -57,18 +55,18 @@ public class UserService {
     public void deleteUserFriendsId(Long id, Long friendId) throws ValidationException {
         if (id <= 0) {
             throw new ValidationException(
-                    String.format("id пользователя {} не может быть отрицательным", id));
+                    String.format("id пользователя %d не может быть отрицательным", id));
         }
         if (friendId <= 0) {
             throw new ValidationException(
-                    String.format("friendId пользователя {} не может быть отрицательным", friendId));
+                    String.format("friendId пользователя %d не может быть отрицательным", friendId));
         }
         userStorage.deleteFriend(id, friendId);
     }
 
     public List<User> allFriends(Long id) throws ValidationException {
         if (id <= 0) {
-            throw new ValidationException(String.format("Пользователь {} не найден", id));
+            throw new ValidationException(String.format("Пользователь %d не найден", id));
         }
         return userStorage.getFriends(id);
     }
@@ -76,11 +74,11 @@ public class UserService {
     public List<User> allCommonFriends(Long id, Long otherId) throws ValidationException {
         if (id <= 0) {
             throw new ValidationException(
-                    String.format("id пользователя {} не может быть отрицательным", id));
+                    String.format("id пользователя %d не может быть отрицательным", id));
         }
         if (otherId <= 0) {
             throw new ValidationException(
-                    String.format("otherId пользователя {} не может быть отрицательным", otherId));
+                    String.format("otherId пользователя %d не может быть отрицательным", otherId));
         }
         return userStorage.getCommonFriends(id, otherId);
     }

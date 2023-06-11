@@ -1,7 +1,5 @@
 package ru.filmogram.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -15,8 +13,6 @@ import java.util.List;
 
 @Repository
 public class GenreDbStorageImpl implements GenreStorage {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private final JdbcTemplate jdbcTemplate;
@@ -41,7 +37,7 @@ public class GenreDbStorageImpl implements GenreStorage {
                     .build();
             return genre;
         } else {
-            throw new ObjectNotFoundException("Жанр не найден");
+            throw new ObjectNotFoundException(String.format("Жанр %d не найден", id));
         }
     }
 

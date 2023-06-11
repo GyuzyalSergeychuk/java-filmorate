@@ -20,7 +20,7 @@ public class MpaService {
 
     public Mpa getId(Long id) throws ValidationException {
         if (id <= 0) {
-            throw new ValidationException(String.format("id {} не может быть отрицательным", id));
+            throw new ValidationException(String.format("id %d не может быть отрицательным", id));
         }
         return mpaStorage.getMpaId(id);
     }

@@ -1,7 +1,6 @@
 package ru.filmogram.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,9 +18,8 @@ import java.util.*;
 
 @Repository
 @Primary
+@Slf4j
 public class UserDbStorageImpl implements UserStorage {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private final JdbcTemplate jdbcTemplate;
@@ -91,7 +89,7 @@ public class UserDbStorageImpl implements UserStorage {
 
         if (userId.size() == 0) {
             log.info("Пользователь {} не существует", userId);
-            throw new ObjectNotFoundException("{} пользователь не найден");
+            throw new ObjectNotFoundException(String.format("%d пользователь не найден", user.getId()));
         } else if (userId.get(0) > 0) {
             jdbcTemplate.update(
                     "UPDATE users SET " +
@@ -118,7 +116,7 @@ public class UserDbStorageImpl implements UserStorage {
 
         if (userId.size() == 0) {
             log.info("Данный {} пользователь не найден", userId);
-            throw new ObjectNotFoundException("id пользователя {} не существует");
+            throw new ObjectNotFoundException(String.format("id пользователя %d не существует", id));
         }
         String query = "SELECT user_id," +
                 "              user_name," +

@@ -44,13 +44,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film addLikeFilm(Long id, Long userId) throws ObjectNotFoundException {
+    public boolean addLikeFilm(Long id, Long userId) throws ObjectNotFoundException {
         if (!films.containsKey(id)) {
             throw new ObjectNotFoundException("Данный фильм отсутствует");
         }
         Film film = films.get(id);
         film.addLike(userId);
-        return film;
+        return true;
     }
 
     @Override

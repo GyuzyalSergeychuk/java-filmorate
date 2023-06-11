@@ -35,7 +35,7 @@ public class FilmController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public Film addLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) throws ValidationException {
+    public boolean addLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) throws ValidationException {
         return filmService.addLike(id, userId);
     }
 

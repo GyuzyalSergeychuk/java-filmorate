@@ -20,7 +20,7 @@ public class GenreService {
 
     public Genre getGenreId(Long id) throws ValidationException {
         if (id <= 0) {
-            throw new ValidationException(String.format("id жанра {} не может быть отрицательным", id));
+            throw new ValidationException(String.format("id жанра %d не может быть отрицательным", id));
         }
         return genreStorage.getGenre(id);
     }

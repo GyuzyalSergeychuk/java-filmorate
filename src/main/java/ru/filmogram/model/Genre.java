@@ -3,6 +3,8 @@ package ru.filmogram.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Objects;
+
 @Data
 @Builder
 public class Genre {
@@ -24,5 +26,10 @@ public class Genre {
         if (o == null || getClass() != o.getClass()) return false;
         Genre that = (Genre) o;
         return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

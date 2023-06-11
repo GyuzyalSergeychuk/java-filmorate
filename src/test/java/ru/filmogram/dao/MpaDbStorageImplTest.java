@@ -27,7 +27,7 @@ class MpaDbStorageImplTest {
     MpaStorage mpaStorage;
 
     @Test
-    void getMpaId() throws ValidationException {
+    void testGetMpaId() throws ValidationException {
 
         Mpa mpa = mpaStorage.getMpaId(1L);
 
@@ -35,7 +35,7 @@ class MpaDbStorageImplTest {
     }
 
     @Test
-    void findAllMpa() throws ValidationException {
+    void testFindAllMpa() throws ValidationException {
 
         List<Mpa> allMpa = mpaStorage.findAllMpa();
 

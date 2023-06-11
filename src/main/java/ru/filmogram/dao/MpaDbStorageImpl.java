@@ -1,7 +1,6 @@
 package ru.filmogram.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -14,9 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Slf4j
 public class MpaDbStorageImpl implements MpaStorage {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private final JdbcTemplate jdbcTemplate;

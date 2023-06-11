@@ -25,7 +25,7 @@ class UserDbStorageImplTest {
     UserStorage userStorage;
 
     @Test
-    void findAllUser() throws ValidationException {
+    void testFindAllUser() throws ValidationException {
         User user = User.builder()
                 .name("Том4")
                 .email("nnjh@come.4")
@@ -49,7 +49,7 @@ class UserDbStorageImplTest {
     }
 
     @Test
-    void createUser() throws ValidationException {
+    void testCreateUser() throws ValidationException {
         User user = User.builder()
                 .name("Том4")
                 .email("nnjh@come.4")
@@ -61,7 +61,7 @@ class UserDbStorageImplTest {
     }
 
     @Test
-    void updateUser() throws ValidationException {
+    void testUpdateUser() throws ValidationException {
         User user = User.builder()
                 .name("Том14")
                 .email("nnjh@come.1")
@@ -85,7 +85,7 @@ class UserDbStorageImplTest {
     }
 
     @Test
-    void getUserId() throws ValidationException {
+    void testGetUserId() throws ValidationException {
         User user = User.builder()
                 .name("Том14")
                 .email("nnjh@come.1")
@@ -107,7 +107,7 @@ class UserDbStorageImplTest {
     }
 
     @Test
-    void addFriendAndGetFriends() throws ValidationException {
+    void testAddFriendAndGetFriends() throws ValidationException {
         User user1 = User.builder()
                 .name("Том14")
                 .email("nnjh@come.1")
@@ -162,7 +162,7 @@ class UserDbStorageImplTest {
     }
 
     @Test
-    void deleteFriend() throws ValidationException {
+    void testDeleteFriend() throws ValidationException {
         User user = User.builder()
                 .name("Том14")
                 .email("nnjh@come.1")
@@ -199,7 +199,7 @@ class UserDbStorageImplTest {
     }
 
     @Test
-    void getCommonFriends() throws ValidationException {
+    void testGetCommonFriends() throws ValidationException {
         User user1 = User.builder()
                 .name("Том14")
                 .email("nnjh@come.1")
