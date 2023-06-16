@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.filmogram.exceptions.ValidationException;
 import ru.filmogram.model.Film;
 import ru.filmogram.services.FilmService;
-import ru.filmogram.storage.film.FilmStorage;
 
 import java.util.List;
 
@@ -13,42 +12,38 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private FilmStorage filmStorage;
     private FilmService filmService;
 
     @Autowired
-    public FilmController(FilmStorage filmStorage, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-    }
-
-    public FilmController(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
     }
 
     @GetMapping()
     public List<Film> findAll() {
-        return filmStorage.findAllFilm();
+        return filmService.findAll();
     }
 
     @PostMapping()
     public Film create(@RequestBody Film film) throws ValidationException {
-        return filmStorage.createFilm(film);
+        return filmService.create(film);
     }
 
     @PutMapping()
     public Film update(@RequestBody Film film) throws ValidationException {
-        return filmStorage.updateFilm(film);
+        return filmService.update(film);
     }
 
     @PutMapping("{id}/like/{userId}")
-    public Film updateLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
+    public boolean addLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) throws ValidationException {
         return filmService.addLike(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public void deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
+    public boolean deleteLikeFilm(@PathVariable("id") Long id, @PathVariable("userId") Long userId)
+            throws ValidationException {
         filmService.deleteLike(id, userId);
+        return true;
     }
 
     @GetMapping("/popular")
@@ -62,7 +57,7 @@ public class FilmController {
     }
 
     @GetMapping("{id}")
-    public Film getFilm(@PathVariable("id") Long id) {
+    public Film getFilm(@PathVariable("id") Long id) throws ValidationException {
         return filmService.getIdFilm(id);
     }
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -15,8 +16,9 @@ public class Film implements Comparable<Film> {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private Set<String> genre;
-    private String rating;
+    private List<Genre> genres;
+    private Mpa mpa;
+    private Integer rate;
     // продолжительность фильма в минутах
     private long duration;
     private Set<Long> likes;
@@ -46,5 +48,20 @@ public class Film implements Comparable<Film> {
             return -1;
         }
         return this.likes.size() - o.likes.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", genres=" + genres +
+                ", mpa=" + mpa +
+                ", rate=" + rate +
+                ", duration=" + duration +
+                ", likes=" + likes +
+                '}';
     }
 }

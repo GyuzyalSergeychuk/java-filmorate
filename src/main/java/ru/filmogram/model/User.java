@@ -38,4 +38,17 @@ public class User {
     public void deleteFriend(Long friendId) {
         friends.remove(friendId);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", login='" + login + '\'' +
+                ", name='" + name + '\'' +
+                ", birthday=" + birthday +
+                ", status=" + status +
+                ", friends=" + friends +
+                '}';
+    }
 }
